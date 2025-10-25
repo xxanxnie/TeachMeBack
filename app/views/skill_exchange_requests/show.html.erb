@@ -1,0 +1,18 @@
+<!-- app/views/skill_exchange_requests/show.html.erb -->
+<h1>Your Skill Exchange Request</h1>
+
+<p><strong>Teach:</strong> <%= @skill_exchange_request.teach_skill %> (<%= @skill_exchange_request.teach_level.humanize %>)</p>
+<p><strong>Learn:</strong> <%= @skill_exchange_request.learn_skill %> (<%= @skill_exchange_request.learn_level.humanize %>)</p>
+<p><strong>Hours to offer:</strong> <%= @skill_exchange_request.offer_hours %></p>
+<p><strong>Modality:</strong> <%= @skill_exchange_request.modality.humanize %></p>
+<p><strong>Availability:</strong>
+  <%= SkillExchangeRequest::DAYS.values_at(*@skill_exchange_request.availability_days).join(", ") %>
+</p>
+<% if @skill_exchange_request.notes.present? %>
+  <p><strong>Notes:</strong> <%= simple_format(@skill_exchange_request.notes) %></p>
+<% end %>
+<% if @skill_exchange_request.learning_goal.present? %>
+  <p><strong>Learning Goal:</strong> <%= simple_format(@skill_exchange_request.learning_goal) %></p>
+<% end %>
+<p><strong>Expires:</strong> <%= @skill_exchange_request.expires_after_days %> days from now</p>
+<p><em>Status:</em> <%= @skill_exchange_request.status.humanize %></p>

@@ -1,24 +1,36 @@
-# README
+# TeachMeBack 🎓
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+TeachMeBack is a simple Ruby on Rails SaaS app that lets students exchange skills — like *“I’ll teach you guitar if you help me with Python.”*
 
-Things you may want to cover:
+---
 
-* Ruby version
+## 🚀 Getting Started
 
-* System dependencies
+### 1️⃣ Install Ruby and rbenv (macOS)
+```bash
+# Install rbenv + ruby-build
+brew install rbenv ruby-build
 
-* Configuration
+# Install Ruby
+rbenv install 3.4.7
+rbenv local 3.4.7
 
-* Database creation
+# Install Bundler
+gem install bundler
 
-* Database initialization
+# Create the development & test databases
+bin/rails db:create
 
-* How to run the test suite
+# Run migrations to create tables (users, skill_exchange_requests, etc.)
+bin/rails db:migrate
 
-* Services (job queues, cache servers, search engines, etc.)
+# Start app
+bin/rails s
 
-* Deployment instructions
+=> Booting Puma
+=> Rails 8.x application starting in development
+=> Listening on http://127.0.0.1:3000
+```
 
-* ...
+Request skill
+http://localhost:3000/skill_exchange_requests/new
