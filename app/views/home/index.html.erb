@@ -1,0 +1,18 @@
+<h1>TeachMeBack</h1>
+
+<% if flash[:notice].present? %>
+  <% flash[:notice].to_s.split("\n").each do |line| %>
+    <p><%= line %></p>
+  <% end %>
+<% end %>
+
+<nav>
+  <%= link_to "Sign up", signup_path %> |
+  <%= link_to "Log in",  login_path %> |
+  <%= button_to "Log out", logout_path, method: :delete %>
+</nav>
+
+<hr>
+
+<p>Welcome to the dashboard.</p>
+
