@@ -1,10 +1,14 @@
 # app/controllers/skill_exchange_requests_controller.rb
 class SkillExchangeRequestsController < ApplicationController
 
+    before_action :require_login, only: [:new, :create, :show]
     # before_action :authenticate_user!
-    before_action :set_mock_current_user
     before_action :set_skill_exchange_request, only: [:show]
-  
+   
+    def index
+      @requests = SkillExchangeRequest.all
+    end
+
     def new
       @skill_exchange_request = SkillExchangeRequest.new
     end
@@ -22,19 +26,6 @@ class SkillExchangeRequestsController < ApplicationController
     def show; end
   
     private
-  
-    # mock user for now
-    def set_mock_current_user
-      @current_user ||= ::User.first_or_create!(
-        email: "mock@example.com",
-        name: "Mock User"
-      )
-    end
-  
-    def current_user
-      @current_user
-    end
-    helper_method :current_user
   
     def set_skill_exchange_request
       @skill_exchange_request = current_user.skill_exchange_requests.find(params[:id])

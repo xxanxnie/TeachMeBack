@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_25_221847) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_27_001455) do
   create_table "skill_exchange_requests", force: :cascade do |t|
     t.integer "availability_mask", default: 0, null: false
     t.datetime "created_at", null: false
@@ -34,6 +34,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_25_221847) do
     t.datetime "created_at", null: false
     t.string "email"
     t.string "name"
+    t.string "password_digest"
     t.datetime "updated_at", null: false
   end
 
