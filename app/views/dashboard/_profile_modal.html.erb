@@ -1,0 +1,29 @@
+<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="profileModalLabel" class="modal-title">Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2"><strong>Name:</strong> <span id="pm-name"></span></div>
+        <div class="mb-2"><strong>Bio:</strong> <span id="pm-bio"></span></div>
+        <div class="mb-2"><strong>Qualifications:</strong> <span id="pm-qual"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("show.bs.modal", function (event) {
+    const btn = event.relatedTarget
+    if (!btn || btn.id === "profileModal") return
+    const name = btn.getAttribute("data-user-name") || ""
+    const bio  = btn.getAttribute("data-user-bio") || ""
+    const qual = btn.getAttribute("data-user-qual") || ""
+    const modal = document.getElementById("profileModal")
+    modal.querySelector("#pm-name").textContent = name
+    modal.querySelector("#pm-bio").textContent  = bio || "—"
+    modal.querySelector("#pm-qual").textContent = qual || "—"
+  })
+</script>
+
