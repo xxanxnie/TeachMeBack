@@ -19,5 +19,5 @@ Rails.application.routes.draw do
   get '/explore', to: 'explore#index'
 
   # Root route (optional for now)
-  # root 'dashboard#index'
+  root 'dashboard#index'
 end
