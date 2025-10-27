@@ -146,3 +146,22 @@ h2.text-primary {
   border-color: #5BC2E7;
   box-shadow: 0 0 6px rgba(91, 194, 231, 0.4);
 }
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ccc;
+  border-top-color: #5BC2E7; /* matches your accent color */
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 1rem auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+

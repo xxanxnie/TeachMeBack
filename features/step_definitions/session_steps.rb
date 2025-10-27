@@ -9,9 +9,9 @@ When("I visit the match page")         { visit match_path }
 When("I visit the explore page")       { visit explore_path }
 
 Then("I should be on the login page") do
-  expect(current_path).to eq(login_path)
+  assert(page.has_current_path?(login_path))
 end
 
 Then("I should see {string}") do |text|
-  expect(page).to have_content(text)
+  assert(page.has_content?(text))
 end
