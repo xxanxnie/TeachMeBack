@@ -10,6 +10,7 @@ class SkillExchangeRequestsController < ApplicationController
     end
 
     def new
+      @loading = true
       @skill_exchange_request = SkillExchangeRequest.new
     end
   
@@ -18,6 +19,7 @@ class SkillExchangeRequestsController < ApplicationController
       if @skill_exchange_request.save
         redirect_to @skill_exchange_request, notice: "Your exchange request was posted!"
       else
+        @loading = true
         flash.now[:alert] = @skill_exchange_request.errors.full_messages.to_sentence
         render :new, status: :unprocessable_entity
       end

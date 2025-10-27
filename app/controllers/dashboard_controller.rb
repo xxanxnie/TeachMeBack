@@ -1,6 +1,11 @@
 class DashboardController < ApplicationController
   before_action :require_login
 
+  def index
+    @loading = true
+    # Later: load dashboard data here
+  end
+
   private
 
   def require_login

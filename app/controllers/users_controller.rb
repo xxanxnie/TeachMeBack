@@ -17,6 +17,8 @@ class UsersController < ApplicationController
 
   def edit
     # profile edit placeholder
+    @loading = true
+    @user = current_user
   end
 
   def update

@@ -1,2 +1,5 @@
 <h1>Match</h1>
 <p>This is the match page. Placeholder content goes here.</p>
+<% if @loading %>
+  <%= render 'shared/loading_spinner' %>
+<% end %>
