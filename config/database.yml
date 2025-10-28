@@ -1,22 +1,29 @@
-default: &default
+development:
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  database: teachmeback_development
+  username: <%= ENV["PGUSER"] %>
+  password: <%= ENV["PGPASSWORD"] %>
+  host: <%= ENV["PGHOST"] %>
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  database: teachmeback_test
+  username: <%= ENV["PGUSER"] %>
+  password: <%= ENV["PGPASSWORD"] %>
+  host: <%= ENV["PGHOST"] %>
+
+production:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   url: <%= ENV["DATABASE_URL"] %>
 
-development:
-  <<: *default
-  database: teachmeback_development
-
-test:
-  <<: *default
-  database: teachmeback_test
-
-production:
-  <<: *default
-
-  cable:
-    adapter: postgresql
-    url: <%= ENV["DATABASE_URL"] %>
+cable:
+  adapter: postgresql
+  url: <%= ENV["DATABASE_URL"] %>
 
 
