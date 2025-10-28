@@ -19,6 +19,16 @@ gem "jbuilder"
 
 gem 'bcrypt', '~> 3.1.7'
 
+# Use SQLite for development and test
+group :development, :test do
+  gem "sqlite3", ">= 2.1"
+end
+
+# Use PostgreSQL in production
+group :production do
+  gem "pg", "~> 1.5"
+end
+
 group :test do
   gem 'cucumber-rails', require: false
   gem 'database_cleaner-active_record'
@@ -71,5 +81,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem 'pg'
