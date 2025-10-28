@@ -1,0 +1,83 @@
+<div class="col-12 col-md-6 col-lg-4 mb-3" data-search-item>
+  <div class="card shadow-sm h-100">
+    <div class="card-body d-flex flex-column">
+      <!-- User Header -->
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <% if skill_request.user.respond_to?(:photo_url) && skill_request.user.photo_url.present? %>
+          <img src="<%= skill_request.user.photo_url %>" class="rounded-circle" style="height:40px;width:40px;object-fit:cover;">
+        <% else %>
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="height:40px;width:40px;font-weight:bold;font-size:1.2rem;">
+            <%= skill_request.user.name.first.upcase %>
+          </div>
+        <% end %>
+        <button
+          class="btn btn-link p-0 text-decoration-none fw-semibold text-dark flex-grow-1 text-start"
+          data-bs-toggle="modal"
+          data-bs-target="#profileModal"
+          data-user-id="<%= skill_request.user_id %>"
+          data-user-name="<%= skill_request.user.name %>"
+          data-user-bio="<%= skill_request.user.try(:bio) %>"
+          data-user-qual="<%= skill_request.user.try(:qualifications) %>">
+          <%= skill_request.user.name %>
+        </button>
+      </div>
+
+      <!-- Skills Info -->
+      <div class="flex-grow-1 mb-3">
+        <div class="mb-2">
+          <span class="fw-bold text-primary">🛠️ Teaching:</span><br>
+          <span class="ms-3"><%= skill_request.teach_skill %> <small class="badge bg-light text-dark"><%= skill_request.teach_level.humanize %></small></span>
+        </div>
+        <div>
+          <span class="fw-bold text-success">📚 Learning:</span><br>
+          <span class="ms-3"><%= skill_request.learn_skill %> <small class="badge bg-light text-dark"><%= skill_request.learn_level.humanize %></small></span>
+        </div>
+      </div>
+
+      <!-- Availability -->
+      <% if skill_request.availability_days.any? %>
+        <div class="small text-muted mb-2">
+          <span class="fw-semibold">🗓️ Available:</span> <%= skill_request.availability_days.map { |i| SkillExchangeRequest::DAYS[i] }.join(", ") %>
+        </div>
+      <% end %>
+
+      <!-- Learning Goal -->
+      <% if skill_request.learning_goal.present? %>
+        <div class="small text-muted mb-2" style="max-height: 60px; overflow: hidden;">
+          <span class="fw-semibold">🎯 Goal:</span> <%= skill_request.learning_goal.truncate(100) %>
+        </div>
+      <% end %>
+
+      <!-- Notes -->
+      <% if skill_request.notes.present? %>
+        <div class="small text-muted mb-2">
+          <%= skill_request.notes.truncate(80) %>
+        </div>
+      <% end %>
+
+      <!-- Badges -->
+      <div class="mt-auto pt-2 border-top">
+        <div class="d-flex flex-wrap gap-1">
+          <span class="badge <%= skill_request.modality == 'remote' ? 'bg-primary' : skill_request.modality == 'hybrid' ? 'bg-warning' : 'bg-success' %>">
+            <%= skill_request.modality.humanize %>
+          </span>
+          <span class="badge bg-info">
+            <%= skill_request.offer_hours %>h/week
+          </span>
+          <span class="badge bg-success">Open</span>
+        </div>
+      </div>
+
+      <!-- Expiration Info -->
+      <div class="mt-2 small text-muted">
+        <% expires_in = (skill_request.created_at + skill_request.expires_after_days.days - Time.current).to_i %>
+        <% if expires_in > 0 %>
+          Expires in <%= pluralize(expires_in / 1.day, 'day') %>
+        <% else %>
+          Expired
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+

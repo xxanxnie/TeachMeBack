@@ -1,5 +1,64 @@
-<h1>Dashboard</h1>
-<p>Welcome to your dashboard. This is a placeholder view.</p>
-<% if @loading %>
-  <%= render 'shared/loading_spinner' %>
-<% end %>
+<div class="container-fluid py-4" data-controller="search">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="mb-1">Skill Exchange Dashboard</h1>
+          <p class="text-muted small">Connect with peers to teach and learn new skills</p>
+        </div>
+        <%= link_to "Create New Request", new_skill_exchange_request_path, class: "btn btn-primary" %>
+      </div>
+
+      <!-- Search Form -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <div class="input-group input-group-lg">
+            <span class="input-group-text">🔍</span>
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Search by skill, name, or modality (e.g., Python, John, Remote)..." 
+              data-search-target="input"
+              data-action="input->search#filter">
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats and Results -->
+      <% count = @skill_requests.size %>
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              Open Skill Exchange Requests
+              <span class="badge bg-primary ms-2" id="request-count"><%= count %></span>
+            </h5>
+            <small class="text-muted">Live updates enabled via Turbo Streams</small>
+          </div>
+        </div>
+        <div class="card-body">
+          <% if @skill_requests.any? %>
+            <%= turbo_stream_from "skill_exchange_requests" %>
+            <div class="row" id="ser_list" data-search-target="list">
+              <% @skill_requests.each do |request| %>
+                <%= render "skill_exchange_requests/skill_request", skill_request: request %>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-5">
+              <div class="mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-inbox text-muted" viewBox="0 0 16 16">
+                  <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 8 9h4.46l-3.05-3.812A.5.5 0 0 0 9.02 4H4.98zm9.954 5H10.45a2.5 2.5 0 0 1-4.9 0H1.066l.32 2.562a.5.5 0 0 0 .497.438h12.234a.5.5 0 0 0 .496-.438L14.933 9zM3.809 3.563A1.5 1.5 0 0 1 4.981 3h4.038a1.5 1.5 0 0 1 1.172.563l3.7 4.625a.5.5 0 0 1 .128.384V14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 .128-.384l3.7-4.625z"/>
+                </svg>
+              </div>
+              <h5 class="text-muted">No open skill exchange requests</h5>
+              <p class="text-muted">Be the first to create one!</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render "dashboard/profile_modal" %>
