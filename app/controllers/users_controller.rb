@@ -39,7 +39,7 @@ class UsersController < ApplicationController
 
   def require_login
     unless current_user
-      redirect_to login_path, alert: "Please log in to access your profile."
+      redirect_to root_path, alert: "Please log in to access your profile."
     end
   end
 
