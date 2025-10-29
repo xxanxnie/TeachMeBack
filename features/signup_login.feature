@@ -9,7 +9,7 @@ Feature: User signup, login, and .edu verification
   Scenario: Successful signup with .edu email
     When I follow "Sign up"
     And I fill in "First name" with "Kiel"
-    And I fill in "Last name" with "Moore"
+    And I fill in "Last name" with "Malate"
     And I fill in "Email" with "km3851@columbia.edu"
     And I fill in "Password" with "secretpass"
     And I press "Create Account"
@@ -18,7 +18,7 @@ Feature: User signup, login, and .edu verification
   Scenario: Signup fails for non .edu email
     When I follow "Sign up"
     And I fill in "First name" with "Kiel"
-    And I fill in "Last name" with "Moore"
+    And I fill in "Last name" with "Malate"
     And I fill in "Email" with "kiel@gmail.com"
     And I fill in "Password" with "secretpass"
     And I press "Create Account"
