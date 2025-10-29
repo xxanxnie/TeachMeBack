@@ -25,9 +25,9 @@ Then('I should see {string}') do |text|
 end
 
 Then('I should be on the dashboard page') do
-  # Avoid RSpec, just manual check
-  unless page.current_path == "/dashboard"
-    raise "Expected to be on /dashboard, but was on #{page.current_path}"
+  # Dashboard is now at /explore
+  unless page.current_path == "/explore"
+    raise "Expected to be on /explore, but was on #{page.current_path}"
   end
 end
 
@@ -36,7 +36,7 @@ Given('a user exists with email {string} and password {string}') do |email, pass
   begin
     if defined?(User)
       user = User.find_by(email: email)
-      user ||= User.create!(name: "Test User", email: email, password: password, edu_verified: email.end_with?(".edu"))
+      user ||= User.create!(first_name: "Test", last_name: "User", name: "Test User", email: email, password: password, edu_verified: email.end_with?(".edu"))
     end
   rescue NameError
   end
