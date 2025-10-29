@@ -16,7 +16,7 @@ class DashboardController < ApplicationController
       @skill_requests = @skill_requests.select do |r|
         r.teach_skill.downcase.include?(q.gsub("%", "")) ||
         r.learn_skill.downcase.include?(q.gsub("%", "")) ||
-        r.user.name.downcase.include?(q.gsub("%", "")) ||
+        r.user.try(:full_name).to_s.downcase.include?(q.gsub("%", "")) ||
         r.modality.downcase.include?(q.gsub("%", ""))
       end
     end
@@ -31,7 +31,7 @@ class DashboardController < ApplicationController
 
   def require_login
     unless current_user
-      redirect_to login_path, alert: "Please log in to access your dashboard."
+      redirect_to root_path, alert: "Please log in to access explore."
     end
   end
 

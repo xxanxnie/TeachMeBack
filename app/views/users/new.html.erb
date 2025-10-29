@@ -1,30 +1,49 @@
-<h1>Sign Up</h1>
+<div class="container min-vh-75 d-flex align-items-center justify-content-center py-4">
+  <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+    <div class="card shadow-sm p-4">
+      <h1 class="h3 text-center mb-4">Create your account</h1>
 
-<% if @user.errors.any? %>
-  <div class="alert alert-danger">
-    <ul>
-      <% @user.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
+      <% if @user.errors.any? %>
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            <% @user.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
       <% end %>
-    </ul>
-  </div>
-<% end %>
 
-<%= form_with model: @user, url: signup_path, local: true do |form| %>
-  <div class="mb-3">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: "form-control" %>
-  </div>
+      <%= form_with model: @user, local: true do |form| %>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <%= form.label :first_name, class: "form-label" %>
+            <%= form.text_field :first_name, class: "form-control", placeholder: "First name" %>
+          </div>
+          <div class="col-md-6">
+            <%= form.label :last_name, class: "form-label" %>
+            <%= form.text_field :last_name, class: "form-control", placeholder: "Last name" %>
+          </div>
 
-  <div class="mb-3">
-    <%= form.label :email %>
-    <%= form.email_field :email, class: "form-control" %>
-  </div>
+          <div class="col-md-12">
+            <%= form.label :university, "School / University", class: "form-label" %>
+            <%= form.text_field :university, class: "form-control", placeholder: "e.g., Columbia University" %>
+          </div>
 
-  <div class="mb-3">
-    <%= form.label :password %>
-    <%= form.password_field :password, class: "form-control" %>
-  </div>
+          <div class="col-md-12">
+            <%= form.label :email, class: "form-label" %>
+            <%= form.email_field :email, class: "form-control", placeholder: "you@school.edu" %>
+          </div>
 
-  <%= form.submit "Create Account", class: "btn btn-primary" %>
-<% end %>
+          <div class="col-md-12">
+            <%= form.label :password, class: "form-label" %>
+            <%= form.password_field :password, class: "form-control" %>
+          </div>
+        </div>
+
+        <div class="d-grid mt-3">
+          <%= form.submit "Create Account", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

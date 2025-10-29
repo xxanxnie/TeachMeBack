@@ -1,3 +1,22 @@
+/* Layout: sticky footer */
+html, body {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  margin-top: auto;
+}
+
 /* Page background */
 body {
     background-color: #f8f9fb;
@@ -54,6 +73,10 @@ h2.text-primary {
   font-weight: 600;
   border-radius: 0.6rem;
   transition: background 0.3s, transform 0.15s ease-in-out;
+}
+
+.display-4 {
+  letter-spacing: 0.3px;
 }
 
 .btn-primary:hover {
