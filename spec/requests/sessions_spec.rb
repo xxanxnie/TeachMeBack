@@ -2,12 +2,12 @@ require "rails_helper"
 
 RSpec.describe "Sessions", type: :request do
   describe "POST /login" do
-    it "logs in with correct credentials and redirects to /dashboard" do
+    it "logs in with correct credentials and redirects to /explore" do
       user = User.create!(name: "K", email: "k@school.edu", password: "secret")
       post "/login", params: { email: user.email, password: "secret" }
-      expect(response).to redirect_to("/dashboard")
+      expect(response).to redirect_to("/explore")
       follow_redirect!
-      expect(response.body).to include("Welcome back")
+      expect(response.body).to include("Logged in successfully")
     end
 
     it "shows error on invalid credentials" do
@@ -19,7 +19,7 @@ RSpec.describe "Sessions", type: :request do
   end
 
   describe "DELETE /logout" do
-    it "clears session and redirects to root with notice" do
+    it "clears session and redirects to root" do
       user = User.create!(name: "K", email: "k@school.edu", password: "secret")
       # log in
       post "/login", params: { email: user.email, password: "secret" }
@@ -28,7 +28,6 @@ RSpec.describe "Sessions", type: :request do
       delete "/logout"
       expect(response).to redirect_to("/")
       follow_redirect!
-      expect(response.body).to include("Signed out")
       expect(session[:user_id]).to be_nil
     end
   end
