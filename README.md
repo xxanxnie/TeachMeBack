@@ -13,8 +13,9 @@ Team Members:
 
 ### Install Ruby and rbenv (macOS)
 ```bash
-# Install rbenv + ruby-build
-brew install rbenv ruby-build
+
+# Install rbenv + ruby-build + sqlite
+brew install rbenv ruby-build sqlite3
 
 # Install Ruby
 rbenv install 3.4.7
@@ -26,7 +27,7 @@ gem install bundler
 # Create the development & test databases
 bin/rails db:create
 
-# Run migrations to create tables (users, skill_exchange_requests, etc.)
+# Run migrations to create tables
 bin/rails db:migrate
 
 # Start app
@@ -37,8 +38,30 @@ bin/rails s
 => Listening on http://127.0.0.1:3000
 ```
 
-## Run Tests
+## Run RSpec Tests
 
+```bash
+# Initialize RSpec (if you haven’t already):
+rails generate rspec:install
+
+# Run all RSpec tests:
+bundle exec rspec
+
+# Run a specific test file:
+bundle exec rspec spec/requests/dashboard_spec.rb
+```
+
+## Run Cucumber Tests
+```bash
+# Initialize Cucumber (if you haven’t already):
+rails generate cucumber:install
+
+# Run all feature tests:
+bundle exec rspec
+
+# Run a specific feature file:
+bundle exec cucumber signup_login.feature
+```
 
 ## Routes
 
