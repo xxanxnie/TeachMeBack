@@ -1,5 +1,5 @@
 class DashboardController < ApplicationController
-  before_action :set_mock_current_user
+  before_action :require_login
 
   def index
     @query = params[:q].to_s.strip
@@ -29,16 +29,14 @@ class DashboardController < ApplicationController
 
   private
 
-  def set_mock_current_user
-    @current_user ||= User.first_or_create!(
-      email: "mock@example.com",
-      name: "Mock User"
-    )
+  def require_login
+    unless current_user
+      redirect_to login_path, alert: "Please log in to access your dashboard."
+    end
   end
 
   def current_user
-    @current_user
+    @current_user ||= User.find_by(id: session[:user_id])
   end
   helper_method :current_user
 end
-

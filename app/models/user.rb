@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :skill_exchange_requests, dependent: :destroy
+  has_secure_password
   validates :name,  presence: true
   validates :email, presence: true
   validate  :edu_email_only
@@ -17,4 +19,3 @@ class User < ApplicationRecord
     self.edu_verified = email&.end_with?(".edu")
   end
 end
-  
