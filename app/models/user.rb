@@ -6,6 +6,21 @@ class User < ApplicationRecord
   validate  :edu_email_only
 
   before_validation :set_edu_verified
+  before_validation :set_display_name
+
+  def full_name
+    fn = [first_name.to_s.strip, last_name.to_s.strip].reject(&:blank?).join(" ")
+    fn.presence || name.to_s
+  end
+
+  private
+
+  def set_display_name
+    if name.to_s.strip.blank?
+      composed = [first_name.to_s.strip, last_name.to_s.strip].reject(&:blank?).join(" ")
+      self.name = composed if composed.present?
+    end
+  end
 
   private
 

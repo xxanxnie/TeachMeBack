@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 class="mb-1">Skill Exchange Dashboard</h1>
+          <h1 class="mb-1">Explore Skill Exchanges</h1>
           <p class="text-muted small">Connect with peers to teach and learn new skills</p>
         </div>
         <%= link_to "Create New Request", new_skill_exchange_request_path, class: "btn btn-primary" %>
@@ -33,7 +33,6 @@
               Open Skill Exchange Requests
               <span class="badge bg-primary ms-2" id="request-count"><%= count %></span>
             </h5>
-            <small class="text-muted">Live updates enabled via Turbo Streams</small>
           </div>
         </div>
         <div class="card-body">

@@ -7,7 +7,7 @@
           <img src="<%= skill_request.user.photo_url %>" class="rounded-circle" style="height:40px;width:40px;object-fit:cover;">
         <% else %>
           <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="height:40px;width:40px;font-weight:bold;font-size:1.2rem;">
-            <%= skill_request.user.name.first.upcase %>
+            <%= (skill_request.user.try(:full_name).to_s.first || "?").upcase %>
           </div>
         <% end %>
         <button
@@ -15,10 +15,10 @@
           data-bs-toggle="modal"
           data-bs-target="#profileModal"
           data-user-id="<%= skill_request.user_id %>"
-          data-user-name="<%= skill_request.user.name %>"
+          data-user-name="<%= skill_request.user.try(:full_name) || skill_request.user.name %>"
           data-user-bio="<%= skill_request.user.try(:bio) %>"
           data-user-qual="<%= skill_request.user.try(:qualifications) %>">
-          <%= skill_request.user.name %>
+          <%= skill_request.user.try(:full_name) || skill_request.user.name %>
         </button>
       </div>
 

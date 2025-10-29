@@ -22,13 +22,19 @@ class UsersController < ApplicationController
   end
 
   def update
-    # profile update placeholder
+    if current_user.update(user_params)
+      redirect_to profile_path
+    else
+      @user = current_user
+      flash.now[:alert] = current_user.errors.full_messages.to_sentence
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   private
 
   def user_params
-    params.require(:user).permit(:name, :email, :password)
+    params.require(:user).permit(:first_name, :last_name, :name, :email, :password, :bio, :location, :university)
   end
 
   def require_login

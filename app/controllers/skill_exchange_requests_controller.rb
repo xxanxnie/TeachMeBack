@@ -17,7 +17,7 @@ class SkillExchangeRequestsController < ApplicationController
     def create
       @skill_exchange_request = current_user.skill_exchange_requests.new(ser_params)
       if @skill_exchange_request.save
-        redirect_to @skill_exchange_request, notice: "Your exchange request was posted!"
+        redirect_to explore_path, notice: "Your skill exchange request was posted successfully!"
       else
         @loading = true
         flash.now[:alert] = @skill_exchange_request.errors.full_messages.to_sentence

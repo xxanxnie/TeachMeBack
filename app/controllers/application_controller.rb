@@ -1,11 +1,8 @@
 class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  # Make current_user available to views
   helper_method :current_user
 
   def current_user
@@ -14,7 +11,7 @@ class ApplicationController < ActionController::Base
 
   def require_login
     unless current_user
-      redirect_to login_path, alert: "Please log in to access this page."
+      redirect_to root_path, alert: "Please log in to access this page."
     end
   end
 end

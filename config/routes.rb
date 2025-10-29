@@ -1,11 +1,10 @@
 Rails.application.routes.draw do
   # Root route
-  root 'sessions#new'
+  root 'home#index'
 
   # Core pages
-  get '/dashboard', to: 'dashboard#index'
+  get '/explore', to: 'dashboard#index'
   get '/match', to: 'match#index'
-  get '/explore', to: 'explore#index'
 
   # Skill exchange request routes
   resources :skill_exchange_requests, only: [:new, :create, :show]
@@ -20,4 +19,5 @@ Rails.application.routes.draw do
   get '/signup', to: 'users#new'
   post '/users', to: 'users#create'
   get '/profile', to: 'users#edit'
+  patch '/profile', to: 'users#update'
 end

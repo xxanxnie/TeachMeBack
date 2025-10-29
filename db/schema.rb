@@ -1,8 +1,4 @@
-# migrations use external dependencies or application code.
-#
-# It's strongly recommended that you check this file into your version control system.
-
-ActiveRecord::Schema[8.1].define(version: 2025_10_27_001455) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_29_000200) do
   create_table "skill_exchange_requests", force: :cascade do |t|
     t.integer "availability_mask", default: 0, null: false
     t.datetime "created_at", null: false
@@ -23,11 +19,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_27_001455) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.text "bio"
     t.datetime "created_at", null: false
     t.boolean "edu_verified"
     t.string "email"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "location"
     t.string "name"
+    t.string "password"
     t.string "password_digest"
+    t.string "university"
     t.datetime "updated_at", null: false
   end
 

@@ -1,18 +1,33 @@
-<h1>TeachMeBack</h1>
+<div class="container py-5">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-6">
+      <h1 class="display-4 fw-bold text-primary mb-3">TeachMeBack</h1>
+      <p class="lead mb-4">Turning Campus Talent Into Shared Learning</p>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <%= link_to "Create account to get started", signup_path, class: "btn btn-primary btn-lg" %>
+        <span class="text-muted">or log in to continue</span>
+      </div>
+    </div>
 
-<% if flash[:notice].present? %>
-  <% flash[:notice].to_s.split("\n").each do |line| %>
-    <p><%= line %></p>
-  <% end %>
-<% end %>
+    <div class="col-lg-6">
+      <div class="card shadow-sm p-4">
+        <h2 class="h4 mb-3">Log in</h2>
+        <%= form_with url: login_path, local: true do |form| %>
+          <div class="mb-3">
+            <%= form.label :email, class: "form-label" %>
+            <%= form.email_field :email, class: "form-control", placeholder: "you@school.edu" %>
+          </div>
 
-<nav>
-  <%= link_to "Sign up", signup_path %> |
-  <%= link_to "Log in",  login_path %> |
-  <%= button_to "Log out", logout_path, method: :delete %>
-</nav>
+          <div class="mb-3">
+            <%= form.label :password, class: "form-label" %>
+            <%= form.password_field :password, class: "form-control" %>
+          </div>
 
-<hr>
-
-<p>Welcome to the dashboard.</p>
-
+          <div class="d-grid">
+            <%= form.submit "Log In", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
