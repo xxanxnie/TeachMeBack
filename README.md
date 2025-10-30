@@ -120,5 +120,4 @@ User Management:
 
 ## Submission Info
 - **Repository:** https://github.com/xxanxnie/TeachMeBack  
-- **Commit Hash:** f9bb02d  
 - **Iteration:** 1
