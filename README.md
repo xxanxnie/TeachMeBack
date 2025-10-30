@@ -9,6 +9,25 @@ Team Members:
 * Kiel Malate – km3851
 ---
 
+## Deployment
+Heroku: https://teachmeback-e9b7cdefef4f.herokuapp.com/
+
+## What We Accomplished
+- Implemented the **Explore page** with dashboard features that display and filter skill exchange requests.  
+- Built **access-control logic** redirecting logged-out users from protected pages to the login page.  
+- Created the **signup and login flow** with `.edu` email validation to ensure only verified students can register.  
+- Designed the **Skill Exchange Request model**, database migrations, and related controller actions for creating, listing, and viewing requests.  
+- Set up **routes and navigation** between core pages (`/dashboard`, `/explore`, `/login`, `/signup`, `/requests`).  
+- Added **Cucumber feature and RSpec tests** for access control, authentication, and dashboard/explore functionality.  
+
+## Plan for Next Iteration
+- Get **filtering** fully functional on explore and dashboard pages.  
+- Implement **matching logic** between users based on complementary skills.  
+- Add **messaging and review systems** so users can communicate and leave feedback.  
+- Continue **Heroku deployment improvements** and add sample seed data for testing.  
+
+
+
 ## Setup
 
 ### Install Ruby and rbenv (macOS)
@@ -57,10 +76,10 @@ bundle exec rspec spec/requests/dashboard_spec.rb
 rails generate cucumber:install
 
 # Run all feature tests:
-bundle exec rspec
+bundle exec cucumber
 
 # Run a specific feature file:
-bundle exec cucumber signup_login.feature
+bundle exec cucumber features/signup_login.feature
 ```
 
 ## Routes
@@ -98,3 +117,8 @@ User Management:
 | `/users` | POST | `users#create` | Creates a new user account after signup form submission. |
 | `/profile` | GET | `users#edit` | Displays the current user’s editable profile page. |
 | `/profile` | PATCH | `users#update` | Updates and saves user profile changes. |
+
+## Submission Info
+- **Repository:** https://github.com/xxanxnie/TeachMeBack  
+- **Commit Hash:** f9bb02d  
+- **Iteration:** 1
