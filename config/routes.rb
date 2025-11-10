@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   root 'home#index'
 
   # Core pages
-  get '/explore', to: 'dashboard#index'
+  get '/explore', to: 'explore#index'
   get '/match', to: 'match#index'
 
   # Skill exchange request routes
