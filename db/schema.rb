@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_29_000200) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_10_234659) do
   create_table "skill_exchange_requests", force: :cascade do |t|
     t.integer "availability_mask", default: 0, null: false
     t.datetime "created_at", null: false
     t.integer "expires_after_days"
+    t.string "learn_category"
     t.integer "learn_level", default: 1, null: false
     t.string "learn_skill", null: false
     t.text "learning_goal"
@@ -22,6 +23,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_29_000200) do
     t.text "notes"
     t.integer "offer_hours", default: 1, null: false
     t.integer "status", default: 0, null: false
+    t.string "teach_category"
     t.integer "teach_level", default: 2, null: false
     t.string "teach_skill", null: false
     t.datetime "updated_at", null: false

@@ -40,6 +40,13 @@
       <%= render 'shared/error_banner', message: flash[:error] %>
     <% end %>
 
+    <% if flash[:notice].present? %>
+      <div class="alert alert-success" role="alert"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:alert].present? %>
+      <div class="alert alert-warning" role="alert"><%= flash[:alert] %></div>
+    <% end %>
+
     <main class="container mt-4">
       <%= yield %>
     </main>
