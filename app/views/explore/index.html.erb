@@ -128,8 +128,13 @@
                   <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 8 9h4.46l-3.05-3.812A.5.5 0 0 0 9.02 4H4.98zm9.954 5H10.45a2.5 2.5 0 0 1-4.9 0H1.066l.32 2.562a.5.5 0 0 0 .497.438h12.234a.5.5 0 0 0 .496-.438L14.933 9zM3.809 3.563A1.5 1.5 0 0 1 4.981 3h4.038a1.5 1.5 0 0 1 1.172.563l3.7 4.625a.5.5 0 0 1 .128.384V14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 .128-.384l3.7-4.625z"/>
                 </svg>
               </div>
-              <h5 class="text-muted">No open skill exchange requests</h5>
-              <p class="text-muted">Be the first to create one!</p>
+              <% if defined?(@total_open_requests) && @total_open_requests.to_i > 0 %>
+                <h5 class="text-muted">No requests match your filters</h5>
+                <p class="text-muted">Try clearing or widening your filters to see more results.</p>
+              <% else %>
+                <h5 class="text-muted">No open skill exchange requests</h5>
+                <p class="text-muted">Be the first to create one!</p>
+              <% end %>
             </div>
           <% end %>
         </div>

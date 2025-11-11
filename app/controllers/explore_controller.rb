@@ -4,47 +4,75 @@ class ExploreController < ApplicationController
   def index
     @loading = true
 
-    # collect filter params (all come from GET)
-    selected_roles = Array(params[:role]).reject(&:blank?)       # e.g. ["student","instructor"]
-    selected_days  = Array(params[:days]).reject(&:blank?)       # e.g. ["mon","tues","weekend"]
-    selected_cats  = Array(params[:categories]).reject(&:blank?) # e.g. ["music_art","tech_academics"]
+    # collect filter params
+    selected_roles = Array(params[:role] || params[:roles]).map(&:to_s).reject(&:blank?)
+    selected_days  = Array(params[:days]).map(&:to_s).reject(&:blank?)
+    selected_cats  = Array(params[:categories]).map(&:to_s).reject(&:blank?)
 
-    # safe default: empty ActiveRecord::Relation if model exists, else empty array
     if defined?(SkillExchangeRequest)
-      items = SkillExchangeRequest.all
+      # total open requests used to decide which empty message to show
+      @total_open_requests = SkillExchangeRequest.where(status: SkillExchangeRequest.statuses[:open]).count
+      items = SkillExchangeRequest.where(status: SkillExchangeRequest.statuses[:open])
 
-      # filter by user role if association exists (assumes SkillExchangeRequest belongs_to :requester or similar)
+      # CATEGORY + ROLE logic:
+      # - student -> match teach_category
+      # - instructor -> match learn_category
       if selected_roles.any?
-        if SkillExchangeRequest.reflect_on_association(:requester)
-          items = items.joins(:requester).where(users: { role: selected_roles })
-        elsif SkillExchangeRequest.column_names.include?('role')
-          items = items.where(role: selected_roles)
+        conds = []
+        if selected_roles.include?("student")
+          if selected_cats.any?
+            conds << SkillExchangeRequest.arel_table[:teach_category].in(selected_cats)
+          else
+          end
+        end
+
+        if selected_roles.include?("instructor")
+          if selected_cats.any?
+            conds << SkillExchangeRequest.arel_table[:learn_category].in(selected_cats)
+          else
+          end
+        end
+
+        if conds.any?
+          combined = conds.reduce { |a, b| a.or(b) }
+          items = items.where(combined)
+        end
+      elsif selected_cats.any?
+        # no role picked: match either side
+        items = items.where("teach_category IN (?) OR learn_category IN (?)", selected_cats, selected_cats)
+      end
+
+      # DAYS filtering
+      if selected_days.any?
+        days_order = %w[mon tue wed thu fri sat sun]
+        selected_day_keys = selected_days.map(&:to_s).map(&:downcase)
+        indices = selected_day_keys.map { |d| days_order.index(d) }.compact
+
+        if indices.any?
+          # try common column names in order of preference
+          if SkillExchangeRequest.column_names.include?("availability_mask")
+            masks = indices.map { |i| 1 << i }
+            clause = masks.map { "availability_mask & ? > 0" }.join(" OR ")
+            items = items.where([clause, *masks])
+          elsif SkillExchangeRequest.column_names.include?("availability_days")
+            items = items.where("availability_days && ARRAY[?]::varchar[]", selected_days.map(&:downcase))
+          elsif SkillExchangeRequest.column_names.include?("available_days")
+            items = items.where("available_days && ARRAY[?]::varchar[]", selected_days.map(&:downcase))
+          else
+            items = items.select do |r|
+              avail = Array(r.availability_days).map(&:to_s).map(&:downcase)
+              (avail & selected_days.map(&:to_s).map(&:downcase)).any? ||
+                (avail & indices.map(&:to_s)).any?
+            end
+          end
         end
       end
 
-      # filter by category if model has a category column
-      if selected_cats.any? && SkillExchangeRequest.column_names.include?('category')
-        items = items.where(category: selected_cats)
-      end
-
-      # filter by available days if model stores days in an array column named 'available_days' (Postgres)
-      if selected_days.any? && SkillExchangeRequest.column_names.include?('available_days')
-        # uses Postgres array overlap operator; fallback to simple ILIKE matching if array column not present
-        begin
-          items = items.where("available_days && ARRAY[?]::varchar[]", selected_days)
-        rescue ActiveRecord::StatementInvalid
-          # fallback: match any selected day substring in a text column
-          day_clauses = selected_days.map { |d| "available_days ILIKE ?" }.join(" OR ")
-          items = items.where([day_clauses, *selected_days.map { |d| "%#{d}%" }])
-        end
-      end
-
-      @results = items.limit(100)
+      @results = items.respond_to?(:limit) ? items.limit(100) : items.first(100)
     else
       @results = []
     end
 
-    # keep view compatibility: the view uses @skill_requests
     @skill_requests = @results
 
     @filters = {

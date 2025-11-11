@@ -7,7 +7,9 @@ Rails.application.routes.draw do
   get '/match', to: 'match#index'
 
   # Skill exchange request routes
-  resources :skill_exchange_requests, only: [:new, :create, :show]
+  resources :skill_exchange_requests do
+    post :express_interest, on: :member
+  end
   get '/requests', to: 'skill_exchange_requests#index'
 
   # Authentication routes

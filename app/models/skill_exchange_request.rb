@@ -1,12 +1,14 @@
 # app/models/skill_exchange_request.rb
 class SkillExchangeRequest < ApplicationRecord
     belongs_to :user
+
+    DAYS = %w[Mon Tue Wed Thu Fri Sat Sun].freeze
+
+    attr_accessor :availability_days
   
     enum :status,     { open: 0, matched: 1, closed: 2 },        prefix: true
     enum :teach_level, { beginner: 1, intermediate: 2, advanced: 3 }, prefix: true
     enum :learn_level, { beginner: 1, intermediate: 2, advanced: 3 }, prefix: true
-  
-    DAYS = %w[Sun Mon Tue Wed Thu Fri Sat].freeze
   
     # ---------- REQUIREMENTS (everything required except notes & learning_goal) ----------
     validates :teach_skill, :learn_skill,
@@ -15,7 +17,6 @@ class SkillExchangeRequest < ApplicationRecord
               :expires_after_days,
               presence: true
   
-    # availability is a bitmask, ensure at least one day is selected
     validate  :availability_days_must_be_selected
   
     # ---------- Constraints ----------
@@ -61,7 +62,7 @@ class SkillExchangeRequest < ApplicationRecord
     end
     after_destroy_commit -> { broadcast_remove_to "skill_exchange_requests" }
 
-    # Handy scopes for the dashboard
+    # scopes for the dashboard
     scope :recent_first, -> { order(created_at: :desc) }
     scope :status_open_only, -> { where(status: statuses[:open]) } # enum scope helper
   
@@ -72,5 +73,50 @@ class SkillExchangeRequest < ApplicationRecord
         errors.add(:availability_days, "must include at least one day")
       end
     end
+
+    # categories keys => display label
+    CATEGORIES = {
+      "music_art"      => "Music/Art",
+      "tech_academics" => "Tech/Academics",
+      "sports_fitness" => "Sports/Fitness",
+      "language"       => "Language",
+      "other"          => "Other"
+    }.freeze
+
+    validates :teach_category, :learn_category,
+              presence: true,
+              inclusion: { in: CATEGORIES.keys }
+
+    # normalize strings
+    before_validation do
+      self.teach_skill     = teach_skill.to_s.strip
+      self.learn_skill     = learn_skill.to_s.strip
+      self.teach_category  = teach_category.to_s.strip.presence
+      self.learn_category  = learn_category.to_s.strip.presence
+    end
+
+    def teach_category_label
+      CATEGORIES[teach_category] || teach_category&.humanize
+    end
+
+    def learn_category_label
+      CATEGORIES[learn_category] || learn_category&.humanize
+    end
+
+    # normalize availability days to mask
+    before_validation :normalize_availability_days_to_mask
+
+    private
+
+    def normalize_availability_days_to_mask
+      return if availability_days.blank?
+
+      keys = Array(availability_days).map(&:to_s).map(&:downcase)
+      self.availability_mask = 0
+      keys.each do |k|
+        if (idx = DAYS.index(k))
+          self.availability_mask |= (1 << idx)
+        end
+      end
+    end
   end
-  
