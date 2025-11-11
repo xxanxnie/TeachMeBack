@@ -3,6 +3,7 @@ class ExploreController < ApplicationController
 
   def index
     @loading = true
+    @query = params[:q].to_s.strip
 
     # collect filter params
     selected_roles = Array(params[:role] || params[:roles]).map(&:to_s).reject(&:blank?)
@@ -12,7 +13,10 @@ class ExploreController < ApplicationController
     if defined?(SkillExchangeRequest)
       # total open requests used to decide which empty message to show
       @total_open_requests = SkillExchangeRequest.where(status: SkillExchangeRequest.statuses[:open]).count
-      items = SkillExchangeRequest.where(status: SkillExchangeRequest.statuses[:open])
+      items = SkillExchangeRequest.includes(:user)
+                                  .status_open_only
+                                  .where("skill_exchange_requests.created_at >= ?", 180.days.ago)
+                                  .order(SkillExchangeRequest.arel_table[:created_at].desc)
 
       # CATEGORY + ROLE logic:
       # - student -> match teach_category
@@ -68,7 +72,46 @@ class ExploreController < ApplicationController
         end
       end
 
-      @results = items.respond_to?(:limit) ? items.limit(100) : items.first(100)
+      if @query.present?
+        downcased_query = @query.downcase
+        if items.respond_to?(:left_outer_joins)
+          sanitized = ActiveRecord::Base.sanitize_sql_like(downcased_query)
+          like = "%#{sanitized}%"
+          search_sql = <<~SQL.squish
+            LOWER(skill_exchange_requests.teach_skill) LIKE :q OR
+            LOWER(skill_exchange_requests.learn_skill) LIKE :q OR
+            LOWER(skill_exchange_requests.modality) LIKE :q OR
+            LOWER(COALESCE(users.name, '')) LIKE :q OR
+            LOWER(COALESCE(users.first_name, '')) LIKE :q OR
+            LOWER(COALESCE(users.last_name, '')) LIKE :q OR
+            LOWER(TRIM(COALESCE(users.first_name, '') || ' ' || COALESCE(users.last_name, ''))) LIKE :q
+          SQL
+          items = items.left_outer_joins(:user).where(search_sql, q: like)
+        else
+          items = Array(items).select do |record|
+            values = [
+              record.teach_skill,
+              record.learn_skill,
+              record.modality,
+              record.user&.name,
+              record.user&.first_name,
+              record.user&.last_name,
+              [record.user&.first_name, record.user&.last_name].compact.join(" ")
+            ].compact
+            values.any? { |val| val.to_s.downcase.include?(downcased_query) }
+          end
+        end
+      end
+
+      records =
+        if items.is_a?(ActiveRecord::Relation)
+          items.limit(200).to_a
+        else
+          Array(items)
+        end
+
+      records = records.reject(&:expired?)
+      @results = records.first(100)
     else
       @results = []
     end
@@ -81,5 +124,14 @@ class ExploreController < ApplicationController
       categories: selected_cats
     }
     @loading = false
+  end
+
+  private
+
+  def require_login
+    return if current_user.present?
+
+    flash[:alert] = "Please log in to access explore."
+    redirect_to root_path
   end
 end

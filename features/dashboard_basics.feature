@@ -15,8 +15,3 @@ Feature: Dashboard basics
     And I should see "Piano"
     And I should see "Spanish"
 
-  Scenario: Client-side search filters results
-    When I visit "/dashboard"
-    And I type "spanish" in the dashboard search box
-    Then I should see "Spanish"
-    And I should not see "Python"

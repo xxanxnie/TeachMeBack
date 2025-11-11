@@ -18,10 +18,7 @@ When('I press {string}') do |text|
 end
 
 Then('I should see {string}') do |text|
-  # Simpler version without RSpec `expect`
-  unless page.has_content?(text)
-    raise "Expected page to include: #{text.inspect}, but it did not.\nActual HTML:\n#{page.html[0,500]}..."
-  end
+  expect(page).to have_content(text)
 end
 
 Then('I should be on the dashboard page') do

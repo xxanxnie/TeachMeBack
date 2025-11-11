@@ -13,7 +13,7 @@ RSpec.describe "Sessions", type: :request do
     it "shows error on invalid credentials" do
       user = User.create!(name: "K", email: "k@school.edu", password: "secret")
       post "/login", params: { email: user.email, password: "wrong" }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("Invalid email or password")
     end
   end

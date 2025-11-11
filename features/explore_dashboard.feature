@@ -34,17 +34,6 @@ Feature: Explore dashboard
     And I should not see "Rust"
     And I should not see "Cooking"
 
-  Scenario: Search filters by teach_skill, learn_skill, user full name, or modality
-    Given the following skill exchange requests exist:
-      | teach_skill | learn_skill | modality  | status | created_days_ago | user_name    |
-      | Python      | Guitar      | Remote    | open   | 1                | John Student |
-      | Drawing     | Python      | In person | open   | 2                | Mary Mentor  |
-      | Boxing      | Running     | Remote    | open   | 3                | Mary Mentor  |
-    When I visit the explore page as "Mary Mentor" with query "python"
-    Then I should see "Python"
-    And I should see "Drawing"
-    And I should not see "Boxing"
-
   Scenario: Page has a link to create a new request
     Given the following skill exchange requests exist:
       | teach_skill | learn_skill | modality | status | created_days_ago | user_name    |

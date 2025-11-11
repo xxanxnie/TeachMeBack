@@ -41,6 +41,34 @@ Given("the following skill exchange requests exist:") do |table|
     mm
   end
 
+  day_lookup = {}
+  if defined?(SkillExchangeRequest::DAYS)
+    SkillExchangeRequest::DAYS.each_with_index do |label, idx|
+      day_lookup[label.to_s.downcase] = idx
+    end
+  end
+
+  parse_availability_days = lambda do |value|
+    return [0] if value.nil? || value.to_s.strip == ""
+
+    raw_values =
+      case value
+      when Array then value
+      else value.to_s.split(/[, ]+/)
+      end
+
+    raw_values.map do |token|
+      next if token.to_s.strip == ""
+      normalized = token.to_s.strip.downcase
+      if normalized.match?(/\A\d+\z/)
+        normalized.to_i
+      else
+        key = normalized[0, 3]
+        day_lookup[key] || day_lookup[normalized]
+      end
+    end.compact.presence || [0]
+  end
+
   table.hashes.each do |row|
     user =
       if row["user_email"].to_s.strip != ""
@@ -67,12 +95,17 @@ Given("the following skill exchange requests exist:") do |table|
     attrs = {
       teach_skill:        row["teach_skill"],
       learn_skill:        row["learn_skill"],
+      teach_level:        row["teach_level"] || "intermediate",
+      learn_level:        row["learn_level"] || "beginner",
+      teach_category:     row["teach_category"] || "other",
+      learn_category:     row["learn_category"] || "other",
+      offer_hours:        (row["offer_hours"] || 1).to_i,
       modality:           normalize_modality.call(row["modality"]) || "remote",
       status:             (row["status"] || "open"),
       user:               user,
       created_at:         created_days_ago.zero? ? Time.current : created_days_ago.days.ago,
       expires_after_days: (row["expires_after_days"] || 30).to_i,
-      availability_days:  row["availability_days"] ? Array(row["availability_days"]) : ["Mon"]
+      availability_days:  parse_availability_days.call(row["availability_days"])
     }
 
     begin
@@ -184,4 +217,3 @@ When('I type {string} in the dashboard search box') do |term|
   base = current.path == "/dashboard" ? "/explore" : current.path
   visit("#{base}?q=#{CGI.escape(term)}")
 end
-

@@ -109,14 +109,27 @@ class SkillExchangeRequest < ApplicationRecord
     private
 
     def normalize_availability_days_to_mask
-      return if availability_days.blank?
+      values = Array(availability_days)
+      return if values.blank?
 
-      keys = Array(availability_days).map(&:to_s).map(&:downcase)
       self.availability_mask = 0
-      keys.each do |k|
-        if (idx = DAYS.index(k))
-          self.availability_mask |= (1 << idx)
-        end
+
+      values.each do |value|
+        idx =
+          case value
+          when Integer
+            value
+          else
+            normalized = value.to_s.strip.downcase
+            if normalized =~ /\A\d+\z/
+              normalized.to_i
+            else
+              DAYS.find_index { |day| day.downcase.start_with?(normalized[0, 3]) }
+            end
+          end
+
+        next unless idx
+        self.availability_mask |= (1 << idx)
       end
     end
   end

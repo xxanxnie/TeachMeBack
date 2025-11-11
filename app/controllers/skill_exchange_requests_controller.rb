@@ -1,7 +1,6 @@
 # app/controllers/skill_exchange_requests_controller.rb
 class SkillExchangeRequestsController < ApplicationController
-
-    before_action :require_login, only: [:new, :create, :show]
+    before_action :require_login, only: [:index, :new, :create, :show]
     before_action :set_skill_exchange_request, only: [:show]
    
     def index
@@ -19,7 +18,7 @@ class SkillExchangeRequestsController < ApplicationController
       if @skill_exchange_request.save
         redirect_to explore_path, notice: "Posted."
       else
-        render :new
+        render :new, status: :unprocessable_content
       end
     end
   
@@ -37,9 +36,9 @@ class SkillExchangeRequestsController < ApplicationController
         :teach_level, :learn_level,
         :offer_hours, :modality,
         :expires_after_days, :learning_goal,
+        :notes,
         :teach_category, :learn_category,
         availability_days: []
       )
     end
   end
-
