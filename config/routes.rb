@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   resources :skill_exchange_requests, only: [:new, :create, :show]
   get '/requests', to: 'skill_exchange_requests#index'
 
+  resources :user_skill_requests, only: [:create]
+
   # Authentication routes
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'
