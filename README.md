@@ -12,18 +12,25 @@ Team Members:
 ## Deployment
 Heroku: https://teachmeback-e9b7cdefef4f.herokuapp.com/
 
-## What We Accomplished
+## What We Accomplished (Iteration 1)
 - Implemented the **Explore page** with dashboard features that display and filter skill exchange requests.  
 - Built **access-control logic** redirecting logged-out users from protected pages to the login page.  
 - Created the **signup and login flow** with `.edu` email validation to ensure only verified students can register.  
 - Designed the **Skill Exchange Request model**, database migrations, and related controller actions for creating, listing, and viewing requests.  
 - Set up **routes and navigation** between core pages (`/dashboard`, `/explore`, `/login`, `/signup`, `/requests`).  
-- Added **Cucumber feature and RSpec tests** for access control, authentication, and dashboard/explore functionality.  
+- Added **Cucumber feature and RSpec tests** for access control, authentication, and dashboard/explore functionality.
+
+## What We Accomplished (Iteration 2)
+- Implemented a filtering system that lets users search for partners based on skill category, location, availability, experience level, and optional preferences. These filters are processed in the backend through query parameters and ActiveRecord queries, and the UI supports toggles and sorting options.
+- Built the reciprocal matching logic. When one user sends a skill-exchange request to another, we store that request. If the second user sends a request back—whether for the same skill or a different one—we detect a mutual match, create a Match record, notify both users, and automatically create a chat channel.
+- Implemented the messaging system so matched users can communicate. Each match spawns a Conversation model, and messages store the sender, content, and timestamp. We use ActionCable/WebSockets for real-time chat, and only the two matched users can access the conversation.
+- With these features, we now have the full core loop: users can discover others, match, and chat after meeting.
 
 ## Plan for Next Iteration
-- Get **filtering** fully functional on explore and dashboard pages.  
-- Implement **matching logic** between users based on complementary skills.  
-- Add **messaging and review systems** so users can communicate and leave feedback.  
+- Expand filtering options and refine search stability and performance.
+- Improve UX of the matching flow, including better notifications and clearer CTAs.
+- Add message read indicators, profile enhancements, and session scheduling tools.
+- Merge review system.
 - Continue **Heroku deployment improvements** and add sample seed data for testing.  
 
 
