@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   # Authentication routes
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'
-  get '/logout', to: 'sessions#destroy'
+  match '/logout', to: 'sessions#destroy', via: [:get, :delete]
 
   # User routes
   get '/signup', to: 'users#new'
