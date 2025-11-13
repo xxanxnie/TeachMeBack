@@ -55,8 +55,8 @@ Feature: User Matching
     Given I am logged in as "alice-smith@columbia.edu"
     And a user skill request exists from "Alice Smith" to "Bob Johnson" for skill "Guitar"
     When I visit the explore page
-    And I try to send a request to "Bob Johnson"
-    Then I should see "You have already sent a request to this user"
+    Then I should see "Request Sent" button on the skill request card for "Bob Johnson"
+    And I should not see "TeachMeBack Request" button on the skill request card for "Bob Johnson"
     And only one user skill request should exist from "Alice Smith" to "Bob Johnson"
 
   Scenario: User can view their matches
@@ -131,4 +131,3 @@ Feature: User Matching
     Then I should see "Bob Johnson"
     And I should see "bob-johnson@columbia.edu"
     And I should not see "Alice Smith" in the match cards
-

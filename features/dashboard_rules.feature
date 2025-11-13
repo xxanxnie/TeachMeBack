@@ -12,5 +12,5 @@ Feature: Visibility & live updates
   Scenario: New request appears live
     When I visit "/dashboard"
     And a new open request is created by "new@columbia.edu" with teach "Guitar" and learn "Data Viz"
-    Then I should see "Teaches: Guitar"
-    And I should see "Wants to learn: Data Viz"
+    Then I should see "Teaching: Guitar"
+    And I should see "Learning: Data Viz"

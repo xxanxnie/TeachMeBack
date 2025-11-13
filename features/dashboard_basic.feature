@@ -12,8 +12,8 @@ Feature: Dashboard basics
   Scenario: Dashboard loads and shows cards
     When I visit "/dashboard"
     Then I should see "Explore Skill Exchanges"
-    And I should see "Teaches: Piano"
-    And I should see "Wants to learn: Spanish"
+    And I should see "Teaching: Piano"
+    And I should see "Learning: Spanish"
 
   Scenario: Client-side search filters results
     When I visit "/dashboard"

@@ -1,118 +1,105 @@
 def email_for(full_name)
-  "#{full_name.to_s.parameterize}@columbia.edu"
+  slug = full_name.to_s.strip.parameterize
+  raise ArgumentError, "Full name required to derive email" if slug.blank?
+  "#{slug}@columbia.edu"
+end
+
+def ensure_user(identifier)
+  email = identifier.to_s.include?("@") ? identifier : email_for(identifier)
+  display_name =
+    if identifier.to_s.include?("@")
+      identifier.split("@").first.tr("._-", " ").squeeze(" ").strip.titleize
+    else
+      identifier
+    end
+
+  parts = display_name.to_s.split
+  first = parts.first || display_name
+  last  = parts.drop(1).join(" ").presence || "User"
+
+  User.find_or_create_by!(email: email) do |u|
+    u.password = "password" if u.respond_to?(:password=)
+    u.first_name = first if u.respond_to?(:first_name=)
+    u.last_name  = last if u.respond_to?(:last_name=)
+    u.name       = display_name if u.respond_to?(:name=)
+    u.full_name  = display_name if u.respond_to?(:full_name=)
+  end
+end
+
+def normalize_modality(value)
+  case value.to_s.strip.downcase
+  when "remote", "online", "" then "remote"
+  when "in person", "in-person", "in_person", "inperson", "onsite" then "in_person"
+  when "hybrid" then "hybrid"
+  else
+    "remote"
+  end
+end
+
+def parse_availability(value)
+  return [0] if value.blank?
+
+  tokens = value.is_a?(Array) ? value : value.to_s.split(/[, ]+/)
+  tokens.map do |token|
+    next if token.blank?
+    if token =~ /\A\d+\z/
+      token.to_i
+    else
+      SkillExchangeRequest::DAYS.find_index do |day|
+        day.downcase.start_with?(token.to_s.downcase[0, 3])
+      end
+    end
+  end.compact.presence || [0]
+end
+
+def create_skill_exchange_request(attrs = {})
+  defaults = {
+    user: ensure_user("default@columbia.edu"),
+    teach_skill: "Guitar",
+    teach_level: "intermediate",
+    teach_category: "music_art",
+    learn_skill: "Python",
+    learn_level: "beginner",
+    learn_category: "tech_academics",
+    offer_hours: 2,
+    modality: "remote",
+    status: :open,
+    expires_after_days: 30,
+    availability_days: [1],
+    created_at: Time.current
+  }
+
+  SkillExchangeRequest.create!(defaults.merge(attrs))
 end
 
 def find_user!(full_name)
-  email = email_for(full_name)
-  User.find_by(email: email) ||
-    User.find_by(name: full_name) ||
-    User.find_by(full_name: full_name) rescue nil ||
-    User.find_by(first_name: full_name.split.first, last_name: full_name.split.drop(1).join(" ")) ||
-    raise("User '#{full_name}' not found. Did you create it in Background?")
+  ensure_user(full_name)
 end
 
 Given("the following users exist:") do |table|
-  table.hashes.each do |row|
-    full_name = row["full_name"]
-    email = email_for(full_name)
-    User.find_or_create_by!(email: email) do |u|
-      u.password = "password" if u.respond_to?(:password=)
-      if u.respond_to?(:name=)
-        u.name = full_name
-      end
-      if u.respond_to?(:first_name=) || u.respond_to?(:last_name=)
-        parts = full_name.split
-        u.first_name = parts.first if u.respond_to?(:first_name=)
-        u.last_name  = parts.drop(1).join(" ") if u.respond_to?(:last_name=)
-      end
-      if u.respond_to?(:full_name=)
-        u.full_name = full_name
-      end
-    end
-  end
+  table.hashes.each { |row| ensure_user(row["full_name"]) }
 end
 
 Given("the following skill exchange requests exist:") do |table|
-  normalize_modality = lambda do |m|
-    return nil if m.nil?
-    mm = m.to_s.strip.downcase
-    return "remote" if %w[remote online].include?(mm)
-    return "in person" if %w[in person in-person in_person inperson onsite].include?(mm)
-    mm
-  end
-
-  day_lookup = {}
-  if defined?(SkillExchangeRequest::DAYS)
-    SkillExchangeRequest::DAYS.each_with_index do |label, idx|
-      day_lookup[label.to_s.downcase] = idx
-    end
-  end
-
-  parse_availability_days = lambda do |value|
-    return [0] if value.nil? || value.to_s.strip == ""
-
-    raw_values =
-      case value
-      when Array then value
-      else value.to_s.split(/[, ]+/)
-      end
-
-    raw_values.map do |token|
-      next if token.to_s.strip == ""
-      normalized = token.to_s.strip.downcase
-      if normalized.match?(/\A\d+\z/)
-        normalized.to_i
-      else
-        key = normalized[0, 3]
-        day_lookup[key] || day_lookup[normalized]
-      end
-    end.compact.presence || [0]
-  end
-
   table.hashes.each do |row|
-    user =
-      if row["user_email"].to_s.strip != ""
-        User.find_or_create_by!(email: row["user_email"]) do |u|
-          u.password = "password" if u.respond_to?(:password=)
-          if u.respond_to?(:name=)
-            u.name = row["user_email"].split("@").first.titleize
-          end
-          if u.respond_to?(:first_name=)
-            u.first_name = row["user_email"].split("@").first.titleize
-          end
-          if u.respond_to?(:last_name=)
-            u.last_name = "User"
-          end
-          if u.respond_to?(:full_name=)
-            u.full_name = u.respond_to?(:name) ? u.name : row["user_email"]
-          end
-        end
-      else
-        find_user!(row["user_name"])
-      end
+    identifier = row["user_email"].presence || row["user_name"]
+    user = ensure_user(identifier)
 
-    created_days_ago = row["created_days_ago"].to_i
-    attrs = {
-      teach_skill:        row["teach_skill"],
-      learn_skill:        row["learn_skill"],
-      teach_level:        row["teach_level"] || "intermediate",
-      learn_level:        row["learn_level"] || "beginner",
-      teach_category:     row["teach_category"] || "other",
-      learn_category:     row["learn_category"] || "other",
-      offer_hours:        (row["offer_hours"] || 1).to_i,
-      modality:           normalize_modality.call(row["modality"]) || "remote",
-      status:             (row["status"] || "open"),
-      user:               user,
-      created_at:         created_days_ago.zero? ? Time.current : created_days_ago.days.ago,
+    create_skill_exchange_request(
+      user: user,
+      teach_skill: row["teach_skill"],
+      teach_level: row["teach_level"] || "intermediate",
+      teach_category: row["teach_category"] || "other",
+      learn_skill: row["learn_skill"],
+      learn_level: row["learn_level"] || "beginner",
+      learn_category: row["learn_category"] || "other",
+      offer_hours: (row["offer_hours"] || 1).to_i,
+      modality: normalize_modality(row["modality"]),
+      status: (row["status"] || "open"),
+      created_at: row["created_days_ago"].present? ? row["created_days_ago"].to_i.days.ago : Time.current,
       expires_after_days: (row["expires_after_days"] || 30).to_i,
-      availability_days:  parse_availability_days.call(row["availability_days"])
-    }
-
-    begin
-      SkillExchangeRequest.create!(attrs)
-    rescue ActiveRecord::RecordInvalid
-      SkillExchangeRequest.new(attrs).save!(validate: false)
-    end
+      availability_days: parse_availability(row["availability_days"])
+    )
   end
 end
 
@@ -159,6 +146,10 @@ end
 
 Then("I should not see a link to the explore page") do
   expect(page).not_to have_link("Explore", href: "/explore")
+end
+
+Then("I should see a link to the explore page") do
+  expect(page).to have_link("Explore", href: "/explore")
 end
 
 Then("I should be on the home page") do
@@ -216,4 +207,34 @@ When('I type {string} in the dashboard search box') do |term|
   current = URI.parse(current_url)
   base = current.path == "/dashboard" ? "/explore" : current.path
   visit("#{base}?q=#{CGI.escape(term)}")
+end
+
+Given("a closed skill exchange request exists") do
+  user = ensure_user("closed@columbia.edu")
+  create_skill_exchange_request(user: user, status: :closed, teach_skill: "Closed Skill", learn_skill: "Closed Learn")
+end
+
+Given("an expired skill exchange request exists") do
+  user = ensure_user("expired@columbia.edu")
+  create_skill_exchange_request(
+    user: user,
+    teach_skill: "Expired Skill",
+    learn_skill: "Expired Learn",
+    created_at: 200.days.ago,
+    expires_after_days: 10
+  )
+end
+
+When('a new open request is created by {string} with teach {string} and learn {string}') do |identifier, teach_skill, learn_skill|
+  user = ensure_user(identifier)
+  create_skill_exchange_request(
+    user: user,
+    teach_skill: teach_skill,
+    learn_skill: learn_skill,
+    created_at: Time.current,
+    status: :open
+  )
+
+  current_path = URI.parse(current_url).path rescue nil
+  visit(current_path) if current_path.present?
 end
