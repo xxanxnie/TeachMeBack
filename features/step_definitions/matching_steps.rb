@@ -37,20 +37,29 @@ Given("a match exists between {string} and {string}") do |user1_name, user2_name
 end
 
 When("I click {string} on the skill request card for {string}") do |button_text, owner_name|
-  # Find the card by looking for the owner's name
+  # First, find the user to get their actual displayed name
+  user = find_user_by_name!(owner_name)
+  displayed_name = user.full_name
+  
+  # Find the card by looking for the owner's displayed name
   # Try multiple strategies to find the card
   card = nil
   
   begin
-    # Strategy 1: Find by data-search-item and containing text
-    card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{owner_name}')]]", match: :first)
+    # Strategy 1: Find by data-search-item and containing text (try both names)
+    card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{displayed_name}')]]", match: :first)
   rescue Capybara::ElementNotFound
-    # Strategy 2: Find by class and text content
-    all_cards = page.all(".card.shadow-sm")
-    card = all_cards.find { |c| c.text.include?(owner_name) }
+    begin
+      # Try with the original name too
+      card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{owner_name}')]]", match: :first)
+    rescue Capybara::ElementNotFound
+      # Strategy 2: Find by class and text content
+      all_cards = page.all(".card.shadow-sm")
+      card = all_cards.find { |c| c.text.include?(displayed_name) || c.text.include?(owner_name) }
+    end
   end
   
-  raise "Could not find skill request card for #{owner_name}" unless card
+  raise "Could not find skill request card for #{owner_name} (displayed as: #{displayed_name})" unless card
   
   within(card) do
     # Try to find the button by text
@@ -66,17 +75,25 @@ end
 
 When("I try to send a request to {string}") do |receiver_name|
   # This simulates trying to send a duplicate request
+  # First, find the user to get their actual displayed name
+  user = find_user_by_name!(receiver_name)
+  displayed_name = user.full_name
+  
   # Find a skill request card for this user and try to submit the form
   card = nil
   
   begin
-    card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{receiver_name}')]]", match: :first)
+    card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{displayed_name}')]]", match: :first)
   rescue Capybara::ElementNotFound
-    all_cards = page.all(".card.shadow-sm")
-    card = all_cards.find { |c| c.text.include?(receiver_name) }
+    begin
+      card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{receiver_name}')]]", match: :first)
+    rescue Capybara::ElementNotFound
+      all_cards = page.all(".card.shadow-sm")
+      card = all_cards.find { |c| c.text.include?(displayed_name) || c.text.include?(receiver_name) }
+    end
   end
   
-  raise "Could not find skill request card for #{receiver_name}" unless card
+  raise "Could not find skill request card for #{receiver_name} (displayed as: #{displayed_name})" unless card
   
   within(card) do
     form = find("form[action*='user_skill_requests']", match: :first)
@@ -113,17 +130,25 @@ Then("a match should exist between {string} and {string}") do |user1_name, user2
 end
 
 Then("I should see {string} button on the skill request card for {string}") do |button_text, owner_name|
+  # First, find the user to get their actual displayed name
+  user = find_user_by_name!(owner_name)
+  displayed_name = user.full_name
+  
   # Try multiple strategies to find the card
   card = nil
   
   begin
-    card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{owner_name}')]]", match: :first)
+    card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{displayed_name}')]]", match: :first)
   rescue Capybara::ElementNotFound
-    all_cards = page.all(".card.shadow-sm")
-    card = all_cards.find { |c| c.text.include?(owner_name) }
+    begin
+      card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{owner_name}')]]", match: :first)
+    rescue Capybara::ElementNotFound
+      all_cards = page.all(".card.shadow-sm")
+      card = all_cards.find { |c| c.text.include?(displayed_name) || c.text.include?(owner_name) }
+    end
   end
   
-  raise "Could not find skill request card for #{owner_name}" unless card
+  raise "Could not find skill request card for #{owner_name} (displayed as: #{displayed_name})" unless card
   
   within(card) do
     # Check for button (can be enabled or disabled)
@@ -132,17 +157,25 @@ Then("I should see {string} button on the skill request card for {string}") do |
 end
 
 Then("I should not see {string} button on the skill request card for {string}") do |button_text, owner_name|
+  # First, find the user to get their actual displayed name
+  user = find_user_by_name!(owner_name)
+  displayed_name = user.full_name
+  
   # Try multiple strategies to find the card
   card = nil
   
   begin
-    card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{owner_name}')]]", match: :first)
+    card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{displayed_name}')]]", match: :first)
   rescue Capybara::ElementNotFound
-    all_cards = page.all(".card.shadow-sm")
-    card = all_cards.find { |c| c.text.include?(owner_name) }
+    begin
+      card = page.find(:xpath, "//div[@data-search-item][.//*[contains(text(), '#{owner_name}')]]", match: :first)
+    rescue Capybara::ElementNotFound
+      all_cards = page.all(".card.shadow-sm")
+      card = all_cards.find { |c| c.text.include?(displayed_name) || c.text.include?(owner_name) }
+    end
   end
   
-  raise "Could not find skill request card for #{owner_name}" unless card
+  raise "Could not find skill request card for #{owner_name} (displayed as: #{displayed_name})" unless card
   
   within(card) do
     expect(page).not_to have_button(button_text)
