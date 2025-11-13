@@ -1,5 +1,5 @@
 Given("I am not logged in") do
-  visit logout_path if page.has_link?("Logout")
+  visit "/logout"
 end
 
 When("I visit the dashboard page")     { visit explore_path }
@@ -12,4 +12,3 @@ Then("I should be on the login page") do
   # Redirects now go to root path, which contains the login form
   assert(page.has_current_path?("/") || page.has_current_path?(login_path))
 end
-

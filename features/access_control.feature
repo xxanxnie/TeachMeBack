@@ -22,7 +22,7 @@ Feature: Access control for protected pages
     Given I am not logged in
     When I visit the match page
     Then I should be on the login page
-    And I should see "Please log in to access this page."
+    And I should see "Please log in to view matches."
 
   Scenario: Logged-out user is redirected from explore page
     Given I am not logged in
