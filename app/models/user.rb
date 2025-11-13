@@ -4,6 +4,8 @@ class User < ApplicationRecord
   has_many :received_skill_requests, class_name: "UserSkillRequest", foreign_key: "receiver_id", dependent: :destroy
   has_many :matches_as_user1, class_name: "Match", foreign_key: "user1_id", dependent: :destroy
   has_many :matches_as_user2, class_name: "Match", foreign_key: "user2_id", dependent: :destroy
+  has_many :received_reviews, class_name: "Review", foreign_key: "reviewee_id", dependent: :destroy
+  has_many :given_reviews, class_name: "Review", foreign_key: "reviewer_id", dependent: :destroy
   has_secure_password
   validates :name,  presence: true
   validates :email, presence: true

@@ -22,6 +22,7 @@ group :test do
   gem 'cucumber-rails', require: false
   gem 'database_cleaner-active_record'
   gem 'rails-controller-testing'
+  gem 'shoulda-matchers', '~> 5.0'
 end
 
 gem "tzinfo-data", platforms: %i[ mswin64 mingw x64_mingw jruby ]
