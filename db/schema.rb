@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_10_234659) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_12_223325) do
+  create_table "messages", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "read_at"
+    t.integer "recipient_id", null: false
+    t.integer "sender_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipient_id", "sender_id", "created_at"], name: "index_messages_on_recipient_id_and_sender_id_and_created_at"
+    t.index ["recipient_id"], name: "index_messages_on_recipient_id"
+    t.index ["sender_id", "recipient_id", "created_at"], name: "index_messages_on_sender_id_and_recipient_id_and_created_at"
+    t.index ["sender_id"], name: "index_messages_on_sender_id"
+  end
+
   create_table "skill_exchange_requests", force: :cascade do |t|
     t.integer "availability_mask", default: 0, null: false
     t.datetime "created_at", null: false
@@ -47,5 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_10_234659) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "messages", "users", column: "recipient_id"
+  add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "skill_exchange_requests", "users"
 end
