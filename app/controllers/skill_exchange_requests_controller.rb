@@ -22,7 +22,9 @@ class SkillExchangeRequestsController < ApplicationController
       end
     end
   
-    def show; end
+    def show
+      @skill_exchange_request = SkillExchangeRequest.find(params[:id])
+    end
   
     private
   
