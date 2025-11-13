@@ -15,16 +15,23 @@
     <!-- All nav links on the right -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <%= link_to "Explore", explore_path, class: "nav-link #{'active' if current_page?(explore_path)}" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Match", match_path, class: "nav-link #{'active' if current_page?(match_path)}" %>
-        </li>
 
         <% if user_signed_in? %>
           <li class="nav-item">
-            <%= link_to messages_path, class: "nav-link d-flex align-items-center" do %>
+            <%= link_to "Explore",
+                        explore_path,
+                        class: "nav-link #{'active' if current_page?(explore_path)}" %>
+          </li>
+
+          <li class="nav-item">
+            <%= link_to "Match",
+                        match_path,
+                        class: "nav-link #{'active' if current_page?(match_path)}" %>
+          </li>
+
+          <li class="nav-item">
+            <%= link_to messages_path,
+                        class: "nav-link d-flex align-items-center" do %>
               Messages
               <% count = current_user.unread_messages_count.to_i %>
               <% if count.positive? %>
@@ -32,21 +39,36 @@
               <% end %>
             <% end %>
           </li>
+
           <li class="nav-item">
-            <%= link_to "Profile", profile_path, class: "nav-link #{'active' if current_page?(profile_path)}" %>
+            <%= link_to "Profile",
+                        profile_path,
+                        class: "nav-link #{'active' if current_page?(profile_path)}" %>
           </li>
+
           <li class="nav-item">
-            <%= link_to "Logout", logout_path, class: "nav-link" %>
+            <%= button_to "Logout",
+                          logout_path,
+                          method: :delete,
+                          class: "btn btn-link nav-link p-0" %>
           </li>
+
         <% else %>
           <li class="nav-item">
-            <%= link_to "Login", login_path, class: "nav-link #{'active' if current_page?(login_path)}" %>
+            <%= link_to "Log in",
+                        login_path,
+                        class: "nav-link" %>
           </li>
+
           <li class="nav-item">
-            <%= link_to "Signup", signup_path, class: "nav-link #{'active' if current_page?(signup_path)}" %>
+            <%= link_to "Sign up",
+                        signup_path,
+                        class: "nav-link" %>
           </li>
         <% end %>
+
       </ul>
     </div>
   </div>
 </nav>
+

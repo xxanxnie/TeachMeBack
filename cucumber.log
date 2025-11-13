@@ -1,0 +1,512 @@
+Using the default profile...
+Feature: Access control for protected pages
+
+  Scenario: Logged-out user is redirected from dashboard # features/access_control.feature:3
+    Given I am not logged in                             # features/step_definitions/session_steps.rb:1
+    When I visit the dashboard page                      # features/step_definitions/session_steps.rb:5
+    Then I should be on the login page                   # features/step_definitions/session_steps.rb:11
+    And I should see "Please log in to access explore."  # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Logged-out user is redirected from profile       # features/access_control.feature:9
+    Given I am not logged in                                 # features/step_definitions/session_steps.rb:1
+    When I visit the profile page                            # features/step_definitions/session_steps.rb:6
+    Then I should be on the login page                       # features/step_definitions/session_steps.rb:11
+    And I should see "Please log in to access your profile." # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Logged-out user is redirected from new request page # features/access_control.feature:15
+    Given I am not logged in                                    # features/step_definitions/session_steps.rb:1
+    When I visit the new request page                           # features/step_definitions/session_steps.rb:7
+    Then I should be on the login page                          # features/step_definitions/session_steps.rb:11
+    And I should see "Please log in to access this page."       # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Logged-out user is redirected from match page # features/access_control.feature:21
+    Given I am not logged in                              # features/step_definitions/session_steps.rb:1
+    When I visit the match page                           # features/step_definitions/session_steps.rb:8
+    Then I should be on the login page                    # features/step_definitions/session_steps.rb:11
+    And I should see "Please log in to access this page." # features/step_definitions/auth_steps.rb:20
+      expected to find text "Please log in to access this page." in "TeachMeBack\nExplore Match Login Signup\nPlease log in to view matches.\nPlease log in to view matches.\nTeachMeBack\nTurning Campus Talent Into Shared Learning\nCreate account to get started or log in to continue\nLog in\nEmail\nPassword\n© 2025 TeachMeBack. All rights reserved." (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/auth_steps.rb:21:in `"I should see {string}"'
+      features/access_control.feature:25:in `I should see "Please log in to access this page."'
+
+  Scenario: Logged-out user is redirected from explore page # features/access_control.feature:27
+    Given I am not logged in                                # features/step_definitions/session_steps.rb:1
+    When I visit the explore page                           # features/step_definitions/session_steps.rb:9
+    Then I should be on the login page                      # features/step_definitions/session_steps.rb:11
+    And I should see "Please log in to access explore."     # features/step_definitions/auth_steps.rb:20
+
+Feature: Dashboard basics
+  As a logged-in student
+  I can see and filter skill exchange requests
+
+  Background:                                        # features/dashboard_basic.feature:5
+    Given I am logged in as "me@columbia.edu"        # features/step_definitions/dashboard_steps.rb:182
+    And the following skill exchange requests exist: # features/step_definitions/dashboard_steps.rb:35
+      | user_email        | teach_skill | learn_skill | modality   | expires_after_days |
+      | maya@columbia.edu   | Piano       | Python      | remote     | 30                 |
+      | alex@columbia.edu   | Guitar      | Spanish     | in_person  | 14                 |
+
+  Scenario: Dashboard loads and shows cards     # features/dashboard_basic.feature:12
+    When I visit "/dashboard"                   # features/step_definitions/dashboard_steps.rb:211
+    Then I should see "Explore Skill Exchanges" # features/step_definitions/auth_steps.rb:20
+    And I should see "Teaches: Piano"           # features/step_definitions/auth_steps.rb:20
+      expected to find text "Teaches: Piano" in "TeachMeBack\nExplore Match Messages Profile Logout\nExplore Skill Exchanges\nConnect with peers to teach and learn new skills\nCreate New Request\n🔍\nFilters\nNo filters\nI'm a\nStudent Instructor\nCategory\n🎵 Music/Art 💻 Tech/Academics 🏸 Sports/Fitness 🌏 Language ✨ Other\nClear\nAvailable on\nMon Tue Wed Thu Fri Sat Sun\nOpen Skill Exchange Requests 2\nA\nAlex User\n🛠️ Teaching: Guitar Intermediate\n📚 Learning: Spanish Beginner\n🗓️ Available: Mon\nIn person 1h/week Open\nExpires in 13 days\nSend message\nExpress interest\nM\nMaya User\n🛠️ Teaching: Piano Intermediate\n📚 Learning: Python Beginner\n🗓️ Available: Mon\nRemote 1h/week Open\nExpires in 29 days\nSend message\nExpress interest\nProfile\nName:\nBio:\nQualifications:\n© 2025 TeachMeBack. All rights reserved." (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/auth_steps.rb:21:in `"I should see {string}"'
+      features/dashboard_basic.feature:15:in `I should see "Teaches: Piano"'
+    And I should see "Wants to learn: Spanish"  # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Client-side search filters results       # features/dashboard_basic.feature:18
+    When I visit "/dashboard"                        # features/step_definitions/dashboard_steps.rb:211
+    And I type "spanish" in the dashboard search box # features/step_definitions/dashboard_steps.rb:215
+    Then I should see "Spanish"                      # features/step_definitions/auth_steps.rb:20
+    And I should not see "Python"                    # features/step_definitions/dashboard_steps.rb:178
+
+Feature: Dashboard basics
+  As a logged-in student
+  I can see and filter skill exchange requests
+
+  Background:                                        # features/dashboard_basics.feature:5
+    Given I am logged in as "me@columbia.edu"        # features/step_definitions/dashboard_steps.rb:182
+    And the following skill exchange requests exist: # features/step_definitions/dashboard_steps.rb:35
+      | user_email        | teach_skill | learn_skill | modality  | expires_after_days |
+      | maya@columbia.edu | Piano       | Python      | remote    | 30                 |
+      | alex@columbia.edu | Guitar      | Spanish     | in_person | 14                 |
+
+  Scenario: Dashboard loads and shows cards     # features/dashboard_basics.feature:12
+    When I visit "/dashboard"                   # features/step_definitions/dashboard_steps.rb:211
+    Then I should see "Explore Skill Exchanges" # features/step_definitions/auth_steps.rb:20
+    And I should see "Piano"                    # features/step_definitions/auth_steps.rb:20
+    And I should see "Spanish"                  # features/step_definitions/auth_steps.rb:20
+
+Feature: Visibility & live updates
+
+  Background:                                 # features/dashboard_rules.feature:2
+    Given I am logged in as "me@columbia.edu" # features/step_definitions/dashboard_steps.rb:182
+
+  Scenario: Closed and expired requests are hidden # features/dashboard_rules.feature:5
+    Given a closed skill exchange request exists   # features/dashboard_rules.feature:6
+      Undefined step: "a closed skill exchange request exists" (Cucumber::Core::Test::Result::Undefined)
+      features/dashboard_rules.feature:6:in `a closed skill exchange request exists'
+    And an expired skill exchange request exists   # features/dashboard_rules.feature:7
+      Undefined step: "an expired skill exchange request exists" (Cucumber::Core::Test::Result::Undefined)
+      features/dashboard_rules.feature:7:in `an expired skill exchange request exists'
+    When I visit "/dashboard"                      # features/step_definitions/dashboard_steps.rb:211
+    Then I should not see "Closed"                 # features/step_definitions/dashboard_steps.rb:178
+    And I should not see "Expired"                 # features/step_definitions/dashboard_steps.rb:178
+
+  Scenario: New request appears live                                                                 # features/dashboard_rules.feature:12
+    When I visit "/dashboard"                                                                        # features/step_definitions/dashboard_steps.rb:211
+    And a new open request is created by "new@columbia.edu" with teach "Guitar" and learn "Data Viz" # features/dashboard_rules.feature:14
+      Undefined step: "a new open request is created by "new@columbia.edu" with teach "Guitar" and learn "Data Viz"" (Cucumber::Core::Test::Result::Undefined)
+      features/dashboard_rules.feature:14:in `a new open request is created by "new@columbia.edu" with teach "Guitar" and learn "Data Viz"'
+    Then I should see "Teaches: Guitar"                                                              # features/step_definitions/auth_steps.rb:20
+    And I should see "Wants to learn: Data Viz"                                                      # features/step_definitions/auth_steps.rb:20
+
+Feature: Explore dashboard
+  As a signed-in user
+  I want to browse open skill exchange requests
+  So I can find people to teach or learn with
+
+  Background:                        # features/explore_dashboard.feature:6
+    Given the following users exist: # features/step_definitions/dashboard_steps.rb:14
+      | full_name     |
+      | John Student  |
+      | Mary Mentor   |
+
+  Scenario: Guests do not see Explore in the nav     # features/explore_dashboard.feature:12
+    When I visit the home page as a guest            # features/step_definitions/dashboard_steps.rb:119
+    Then I should not see a link to the explore page # features/step_definitions/dashboard_steps.rb:160
+      expected not to find visible link "Explore" with href "/explore", found 1 match: "Explore" (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/dashboard_steps.rb:161:in `"I should not see a link to the explore page"'
+      features/explore_dashboard.feature:14:in `I should not see a link to the explore page'
+
+  Scenario: Guests are redirected if they visit /explore directly # features/explore_dashboard.feature:16
+    When I visit the explore page as a guest                      # features/step_definitions/dashboard_steps.rb:123
+    Then I should be on the home page                             # features/step_definitions/dashboard_steps.rb:164
+    And I should see "Please log in to access explore."           # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Shows only OPEN and recent requests (<= 180 days) and counts them # features/explore_dashboard.feature:21
+    Given the following skill exchange requests exist:                        # features/step_definitions/dashboard_steps.rb:35
+      | teach_skill | learn_skill | modality  | status | created_days_ago | user_name    |
+      | Python      | Guitar      | Remote    | open   | 5                | John Student |
+      | Swimming    | Piano       | In person | open   | 10               | Mary Mentor  |
+      | Rust        | Yoga        | Remote    | open   | 181              | John Student |
+      | Cooking     | SQL         | Remote    | closed | 7                | Mary Mentor  |
+    When I visit the explore page as "John Student"                           # features/step_definitions/dashboard_steps.rb:150
+    Then I should see "Explore Skill Exchanges"                               # features/step_definitions/auth_steps.rb:20
+    And I should see "Open Skill Exchange Requests"                           # features/step_definitions/auth_steps.rb:20
+    And I should see a request count of 2                                     # features/step_definitions/dashboard_steps.rb:168
+    And I should see "Python"                                                 # features/step_definitions/auth_steps.rb:20
+    And I should see "Swimming"                                               # features/step_definitions/auth_steps.rb:20
+    And I should not see "Rust"                                               # features/step_definitions/dashboard_steps.rb:178
+    And I should not see "Cooking"                                            # features/step_definitions/dashboard_steps.rb:178
+
+  Scenario: Page has a link to create a new request                       # features/explore_dashboard.feature:37
+    Given the following skill exchange requests exist:                    # features/step_definitions/dashboard_steps.rb:35
+      | teach_skill | learn_skill | modality | status | created_days_ago | user_name    |
+      | Python      | Guitar      | Remote   | open   | 1                | John Student |
+    When I visit the explore page as "John Student"                       # features/step_definitions/dashboard_steps.rb:150
+    Then I should see a "Create New Request" link to the new request page # features/step_definitions/dashboard_steps.rb:174
+
+Feature: Filtering skills on explore
+  As a learner and instructor
+  I want to use the explore filters
+  So I can quickly find matching skill exchange requests
+
+  Background:                        # features/filtering_skills.feature:6
+    Given the following users exist: # features/step_definitions/dashboard_steps.rb:14
+      | full_name     |
+      | Casey Creator |
+      | Avery Artist  |
+      | Taylor Tech   |
+
+  Scenario: Instructor filters by category and availability day                      # features/filtering_skills.feature:13
+    And the following skill exchange requests exist:                                 # features/step_definitions/dashboard_steps.rb:35
+      | user_name     | teach_skill | teach_level | teach_category | learn_skill | learn_level | learn_category | modality | status | availability_days |
+      | Casey Creator | Guitar      | advanced    | music_art      | Python      | beginner    | tech_academics | remote   | open   | Tue               |
+      | Avery Artist  | Painting    | intermediate | music_art      | Spanish     | beginner    | language       | remote   | open   | Mon               |
+    When I visit the explore page as "Casey Creator"                                 # features/step_definitions/dashboard_steps.rb:150
+    Then I should see "Guitar"                                                       # features/step_definitions/auth_steps.rb:20
+    And I should see "Painting"                                                      # features/step_definitions/auth_steps.rb:20
+    When I visit "/explore?role[]=instructor&categories[]=tech_academics&days[]=mon" # features/step_definitions/dashboard_steps.rb:211
+    Then I should not see "Guitar"                                                   # features/step_definitions/dashboard_steps.rb:178
+    And I should not see "Painting"                                                  # features/step_definitions/dashboard_steps.rb:178
+    When I visit "/explore?role[]=instructor&categories[]=tech_academics&days[]=tue" # features/step_definitions/dashboard_steps.rb:211
+    Then I should see "Guitar"                                                       # features/step_definitions/auth_steps.rb:20
+    And I should not see "Painting"                                                  # features/step_definitions/dashboard_steps.rb:178
+
+  Scenario: Student filters by teach category                          # features/filtering_skills.feature:28
+    And the following skill exchange requests exist:                   # features/step_definitions/dashboard_steps.rb:35
+      | user_name     | teach_skill | teach_level | teach_category | learn_skill | learn_level | learn_category | modality | status | availability_days |
+      | Casey Creator | Guitar      | advanced    | music_art      | Python      | beginner    | tech_academics | remote   | open   | Tue               |
+      | Avery Artist  | Painting    | intermediate | music_art      | Spanish     | beginner    | language       | remote   | open   | Mon               |
+    When I visit the explore page as "Casey Creator"                   # features/step_definitions/dashboard_steps.rb:150
+    Then I should see "Guitar"                                         # features/step_definitions/auth_steps.rb:20
+    And I should see "Painting"                                        # features/step_definitions/auth_steps.rb:20
+    When I visit "/explore?role[]=student&categories[]=tech_academics" # features/step_definitions/dashboard_steps.rb:211
+    Then I should not see "Guitar"                                     # features/step_definitions/dashboard_steps.rb:178
+    And I should not see "Painting"                                    # features/step_definitions/dashboard_steps.rb:178
+    When I visit "/explore?role[]=student&categories[]=music_art"      # features/step_definitions/dashboard_steps.rb:211
+    Then I should see "Guitar"                                         # features/step_definitions/auth_steps.rb:20
+    And I should see "Painting"                                        # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Instructor filters for language learners                           # features/filtering_skills.feature:43
+    And the following skill exchange requests exist:                           # features/step_definitions/dashboard_steps.rb:35
+      | user_name     | teach_skill | teach_level | teach_category | learn_skill | learn_level | learn_category | modality | status | availability_days |
+      | Casey Creator | Guitar      | advanced    | music_art      | Python      | beginner    | tech_academics | remote   | open   | Tue               |
+      | Avery Artist  | Painting    | intermediate | music_art      | Spanish     | beginner    | language       | remote   | open   | Mon               |
+    When I visit the explore page as "Avery Artist"                            # features/step_definitions/dashboard_steps.rb:150
+    Then I should see "Guitar"                                                 # features/step_definitions/auth_steps.rb:20
+    And I should see "Painting"                                                # features/step_definitions/auth_steps.rb:20
+    When I visit "/explore?role[]=instructor&categories[]=language&days[]=mon" # features/step_definitions/dashboard_steps.rb:211
+    Then I should see "Painting"                                               # features/step_definitions/auth_steps.rb:20
+    And I should not see "Guitar"                                              # features/step_definitions/dashboard_steps.rb:178
+    When I visit "/explore?role[]=instructor&categories[]=language&days[]=tue" # features/step_definitions/dashboard_steps.rb:211
+    Then I should not see "Painting"                                           # features/step_definitions/dashboard_steps.rb:178
+
+  Scenario: Day filters without roles                # features/filtering_skills.feature:57
+    And the following skill exchange requests exist: # features/step_definitions/dashboard_steps.rb:35
+      | user_name     | teach_skill    | teach_level | teach_category  | learn_skill | learn_level | learn_category | modality | status | availability_days |
+      | Casey Creator | Guitar         | advanced    | music_art       | Python      | beginner    | tech_academics | remote   | open   | Tue               |
+      | Avery Artist  | Painting       | intermediate | music_art      | Spanish     | beginner    | language       | remote   | open   | Mon               |
+      | Taylor Tech   | Data Science   | intermediate | tech_academics | Violin      | beginner    | music_art      | remote   | open   | Thu               |
+    When I visit the explore page as "Taylor Tech"   # features/step_definitions/dashboard_steps.rb:150
+    Then I should see "Guitar"                       # features/step_definitions/auth_steps.rb:20
+    And I should see "Painting"                      # features/step_definitions/auth_steps.rb:20
+    And I should see "Data Science"                  # features/step_definitions/auth_steps.rb:20
+    When I visit "/explore?days[]=thu"               # features/step_definitions/dashboard_steps.rb:211
+    Then I should see "Data Science"                 # features/step_definitions/auth_steps.rb:20
+    And I should not see "Guitar"                    # features/step_definitions/dashboard_steps.rb:178
+    And I should not see "Painting"                  # features/step_definitions/dashboard_steps.rb:178
+    When I visit "/explore?days[]=mon&days[]=tue"    # features/step_definitions/dashboard_steps.rb:211
+    Then I should see "Guitar"                       # features/step_definitions/auth_steps.rb:20
+    And I should see "Painting"                      # features/step_definitions/auth_steps.rb:20
+    And I should not see "Data Science"              # features/step_definitions/dashboard_steps.rb:178
+
+Feature: User Matching
+  As a user
+  I want to send requests to other users and get matched when there's mutual interest
+  So I can connect with people who want to exchange skills
+
+  Background:                                        # features/matching.feature:6
+    Given the following users exist:                 # features/step_definitions/dashboard_steps.rb:14
+      | full_name    |
+      | Alice Smith  |
+      | Bob Johnson  |
+      | Charlie Brown|
+    And the following skill exchange requests exist: # features/step_definitions/dashboard_steps.rb:35
+      | user_email        | teach_skill | learn_skill | modality   | expires_after_days |
+      | alice@columbia.edu| Piano       | Python      | remote     | 30                 |
+      | bob@columbia.edu  | Guitar      | Spanish     | in_person  | 14                 |
+      | charlie@columbia.edu | Python   | Piano       | hybrid     | 30                 |
+
+  Scenario: User can send a TeachMeBack request                                                  # features/matching.feature:18
+    Given I am logged in as "alice@columbia.edu"                                                 # features/step_definitions/dashboard_steps.rb:182
+    When I visit the explore page                                                                # features/step_definitions/session_steps.rb:9
+    And I click "TeachMeBack Request" on the skill request card for "Bob Johnson"                # features/step_definitions/matching_steps.rb:39
+      Could not find skill request card for Bob Johnson (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:53:in `"I click {string} on the skill request card for {string}"'
+      features/matching.feature:21:in `I click "TeachMeBack Request" on the skill request card for "Bob Johnson"'
+    Then I should see "Request sent to Bob Johnson."                                             # features/step_definitions/auth_steps.rb:20
+    And I should be on the explore page                                                          # features/step_definitions/skill_exchange_request_steps.rb:65
+    And a user skill request should exist from "Alice Smith" to "Bob Johnson" for skill "Guitar" # features/step_definitions/matching_steps.rb:87
+
+  Scenario: Button shows "Request Sent" after sending a request                                   # features/matching.feature:26
+    Given I am logged in as "alice@columbia.edu"                                                  # features/step_definitions/dashboard_steps.rb:182
+    And a user skill request exists from "Alice Smith" to "Bob Johnson" for skill "Guitar"        # features/step_definitions/matching_steps.rb:15
+    When I visit the explore page                                                                 # features/step_definitions/session_steps.rb:9
+    Then I should see "Request Sent" button on the skill request card for "Bob Johnson"           # features/step_definitions/matching_steps.rb:115
+      Could not find skill request card for Bob Johnson (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:126:in `"I should see {string} button on the skill request card for {string}"'
+      features/matching.feature:30:in `I should see "Request Sent" button on the skill request card for "Bob Johnson"'
+    And I should not see "TeachMeBack Request" button on the skill request card for "Bob Johnson" # features/step_definitions/matching_steps.rb:134
+
+  Scenario: Users get matched when both send requests to each other                                   # features/matching.feature:33
+    Given I am logged in as "alice@columbia.edu"                                                      # features/step_definitions/dashboard_steps.rb:182
+    And a user skill request exists from "Bob Johnson" to "Alice Smith" for skill "Piano"             # features/step_definitions/matching_steps.rb:15
+    When I visit the explore page                                                                     # features/step_definitions/session_steps.rb:9
+    And I click "TeachMeBack Request" on the skill request card for "Bob Johnson"                     # features/step_definitions/matching_steps.rb:39
+      Could not find skill request card for Bob Johnson (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:53:in `"I click {string} on the skill request card for {string}"'
+      features/matching.feature:37:in `I click "TeachMeBack Request" on the skill request card for "Bob Johnson"'
+    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other!" # features/step_definitions/auth_steps.rb:20
+    And a match should exist between "Alice Smith" and "Bob Johnson"                                  # features/step_definitions/matching_steps.rb:100
+
+  Scenario: Matched users see "Matched!" button instead of request button                         # features/matching.feature:41
+    Given I am logged in as "alice@columbia.edu"                                                  # features/step_definitions/dashboard_steps.rb:182
+    And a match exists between "Alice Smith" and "Bob Johnson"                                    # features/step_definitions/matching_steps.rb:26
+    When I visit the explore page                                                                 # features/step_definitions/session_steps.rb:9
+    Then I should see "✓ Matched!" button on the skill request card for "Bob Johnson"             # features/step_definitions/matching_steps.rb:115
+      Could not find skill request card for Bob Johnson (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:126:in `"I should see {string} button on the skill request card for {string}"'
+      features/matching.feature:45:in `I should see "✓ Matched!" button on the skill request card for "Bob Johnson"'
+    And I should not see "TeachMeBack Request" button on the skill request card for "Bob Johnson" # features/step_definitions/matching_steps.rb:134
+    And I should not see "Request Sent" button on the skill request card for "Bob Johnson"        # features/step_definitions/matching_steps.rb:134
+
+  Scenario: User cannot send request to themselves                                                 # features/matching.feature:49
+    Given I am logged in as "alice@columbia.edu"                                                   # features/step_definitions/dashboard_steps.rb:182
+    When I visit the explore page                                                                  # features/step_definitions/session_steps.rb:9
+    Then I should not see "TeachMeBack Request" button on the skill request card for "Alice Smith" # features/step_definitions/matching_steps.rb:134
+      Could not find skill request card for Alice Smith (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:145:in `"I should not see {string} button on the skill request card for {string}"'
+      features/matching.feature:52:in `I should not see "TeachMeBack Request" button on the skill request card for "Alice Smith"'
+
+  Scenario: User cannot send duplicate requests                                            # features/matching.feature:54
+    Given I am logged in as "alice@columbia.edu"                                           # features/step_definitions/dashboard_steps.rb:182
+    And a user skill request exists from "Alice Smith" to "Bob Johnson" for skill "Guitar" # features/step_definitions/matching_steps.rb:15
+    When I visit the explore page                                                          # features/step_definitions/session_steps.rb:9
+    And I try to send a request to "Bob Johnson"                                           # features/step_definitions/matching_steps.rb:67
+      Could not find skill request card for Bob Johnson (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:79:in `"I try to send a request to {string}"'
+      features/matching.feature:58:in `I try to send a request to "Bob Johnson"'
+    Then I should see "You have already sent a request to this user"                       # features/step_definitions/auth_steps.rb:20
+    And only one user skill request should exist from "Alice Smith" to "Bob Johnson"       # features/step_definitions/matching_steps.rb:156
+
+  Scenario: User can view their matches                          # features/matching.feature:62
+    Given I am logged in as "alice@columbia.edu"                 # features/step_definitions/dashboard_steps.rb:182
+    And a match exists between "Alice Smith" and "Bob Johnson"   # features/step_definitions/matching_steps.rb:26
+    And a match exists between "Alice Smith" and "Charlie Brown" # features/step_definitions/matching_steps.rb:26
+    When I visit the match page                                  # features/step_definitions/session_steps.rb:8
+    Then I should see "Your Matches"                             # features/step_definitions/auth_steps.rb:20
+    And I should see "Bob Johnson"                               # features/step_definitions/auth_steps.rb:20
+      expected to find text "Bob Johnson" in "TeachMeBack\nExplore Match Messages Profile Logout\nYour Matches\nUsers you've matched with\nMutual Matches 0\nNo matches yet\nStart exploring and send requests to find your matches!\nExplore\n© 2025 TeachMeBack. All rights reserved." (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/auth_steps.rb:21:in `"I should see {string}"'
+      features/matching.feature:68:in `I should see "Bob Johnson"'
+    And I should see "Charlie Brown"                             # features/step_definitions/auth_steps.rb:20
+    And I should see "Mutual Matches"                            # features/step_definitions/auth_steps.rb:20
+    And I should see a match count of 2                          # features/step_definitions/matching_steps.rb:168
+
+  Scenario: User sees empty state when they have no matches                    # features/matching.feature:73
+    Given I am logged in as "alice@columbia.edu"                               # features/step_definitions/dashboard_steps.rb:182
+    When I visit the match page                                                # features/step_definitions/session_steps.rb:8
+    Then I should see "No matches yet"                                         # features/step_definitions/auth_steps.rb:20
+    And I should see "Start exploring and send requests to find your matches!" # features/step_definitions/auth_steps.rb:20
+    And I should see a link to "Explore"                                       # features/step_definitions/matching_steps.rb:173
+
+  Scenario: Match is created when second user sends request back                                      # features/matching.feature:80
+    Given I am logged in as "alice@columbia.edu"                                                      # features/step_definitions/dashboard_steps.rb:182
+    And a user skill request exists from "Alice Smith" to "Bob Johnson" for skill "Guitar"            # features/step_definitions/matching_steps.rb:15
+    When I log out                                                                                    # features/step_definitions/matching_steps.rb:177
+    And I am logged in as "bob@columbia.edu"                                                          # features/step_definitions/dashboard_steps.rb:182
+    And I visit the explore page                                                                      # features/step_definitions/session_steps.rb:9
+    And I click "TeachMeBack Request" on the skill request card for "Alice Smith"                     # features/step_definitions/matching_steps.rb:39
+      Could not find skill request card for Alice Smith (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:53:in `"I click {string} on the skill request card for {string}"'
+      features/matching.feature:86:in `I click "TeachMeBack Request" on the skill request card for "Alice Smith"'
+    Then I should see "Congrats, it's a match! You and Alice Smith expressed interest in each other!" # features/step_definitions/auth_steps.rb:20
+    And a match should exist between "Alice Smith" and "Bob Johnson"                                  # features/step_definitions/matching_steps.rb:100
+
+  Scenario: Match works regardless of which user sends request first                                  # features/matching.feature:90
+    Given I am logged in as "bob@columbia.edu"                                                        # features/step_definitions/dashboard_steps.rb:182
+    And a user skill request exists from "Bob Johnson" to "Alice Smith" for skill "Piano"             # features/step_definitions/matching_steps.rb:15
+    When I log out                                                                                    # features/step_definitions/matching_steps.rb:177
+    And I am logged in as "alice@columbia.edu"                                                        # features/step_definitions/dashboard_steps.rb:182
+    And I visit the explore page                                                                      # features/step_definitions/session_steps.rb:9
+    And I click "TeachMeBack Request" on the skill request card for "Bob Johnson"                     # features/step_definitions/matching_steps.rb:39
+      Could not find skill request card for Bob Johnson (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:53:in `"I click {string} on the skill request card for {string}"'
+      features/matching.feature:96:in `I click "TeachMeBack Request" on the skill request card for "Bob Johnson"'
+    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other!" # features/step_definitions/auth_steps.rb:20
+    And a match should exist between "Alice Smith" and "Bob Johnson"                                  # features/step_definitions/matching_steps.rb:100
+
+  Scenario: Multiple users can match with the same user                                                 # features/matching.feature:100
+    Given I am logged in as "alice@columbia.edu"                                                        # features/step_definitions/dashboard_steps.rb:182
+    And a user skill request exists from "Bob Johnson" to "Alice Smith" for skill "Piano"               # features/step_definitions/matching_steps.rb:15
+    And a user skill request exists from "Charlie Brown" to "Alice Smith" for skill "Piano"             # features/step_definitions/matching_steps.rb:15
+    When I visit the explore page                                                                       # features/step_definitions/session_steps.rb:9
+    And I click "TeachMeBack Request" on the skill request card for "Bob Johnson"                       # features/step_definitions/matching_steps.rb:39
+      Could not find skill request card for Bob Johnson (RuntimeError)
+      ./features/step_definitions/matching_steps.rb:53:in `"I click {string} on the skill request card for {string}"'
+      features/matching.feature:105:in `I click "TeachMeBack Request" on the skill request card for "Bob Johnson"'
+    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other!"   # features/step_definitions/auth_steps.rb:20
+    And a match should exist between "Alice Smith" and "Bob Johnson"                                    # features/step_definitions/matching_steps.rb:100
+    When I click "TeachMeBack Request" on the skill request card for "Charlie Brown"                    # features/step_definitions/matching_steps.rb:39
+    Then I should see "Congrats, it's a match! You and Charlie Brown expressed interest in each other!" # features/step_definitions/auth_steps.rb:20
+    And a match should exist between "Alice Smith" and "Charlie Brown"                                  # features/step_definitions/matching_steps.rb:100
+    And a match should exist between "Alice Smith" and "Bob Johnson"                                    # features/step_definitions/matching_steps.rb:100
+
+  Scenario: Match persists after both users log out and back in # features/matching.feature:113
+    Given I am logged in as "alice@columbia.edu"                # features/step_definitions/dashboard_steps.rb:182
+    And a match exists between "Alice Smith" and "Bob Johnson"  # features/step_definitions/matching_steps.rb:26
+    When I log out                                              # features/step_definitions/matching_steps.rb:177
+    And I am logged in as "alice@columbia.edu"                  # features/step_definitions/dashboard_steps.rb:182
+    And I visit the match page                                  # features/step_definitions/session_steps.rb:8
+    Then I should see "Bob Johnson"                             # features/step_definitions/auth_steps.rb:20
+      expected to find text "Bob Johnson" in "TeachMeBack\nExplore Match Messages Profile Logout\nYour Matches\nUsers you've matched with\nMutual Matches 0\nNo matches yet\nStart exploring and send requests to find your matches!\nExplore\n© 2025 TeachMeBack. All rights reserved." (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/auth_steps.rb:21:in `"I should see {string}"'
+      features/matching.feature:119:in `I should see "Bob Johnson"'
+    And I should see a match count of 1                         # features/step_definitions/matching_steps.rb:168
+
+  Scenario: User cannot see request button when not logged in                    # features/matching.feature:122
+    Given I am not logged in                                                     # features/step_definitions/session_steps.rb:1
+    When I visit the explore page                                                # features/step_definitions/session_steps.rb:9
+    Then I should not see "TeachMeBack Request" button on any skill request card # features/step_definitions/matching_steps.rb:152
+
+  Scenario: Match shows correct other user information         # features/matching.feature:127
+    Given I am logged in as "alice@columbia.edu"               # features/step_definitions/dashboard_steps.rb:182
+    And a match exists between "Alice Smith" and "Bob Johnson" # features/step_definitions/matching_steps.rb:26
+    When I visit the match page                                # features/step_definitions/session_steps.rb:8
+    Then I should see "Bob Johnson"                            # features/step_definitions/auth_steps.rb:20
+      expected to find text "Bob Johnson" in "TeachMeBack\nExplore Match Messages Profile Logout\nYour Matches\nUsers you've matched with\nMutual Matches 0\nNo matches yet\nStart exploring and send requests to find your matches!\nExplore\n© 2025 TeachMeBack. All rights reserved." (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/auth_steps.rb:21:in `"I should see {string}"'
+      features/matching.feature:131:in `I should see "Bob Johnson"'
+    And I should see "bob@columbia.edu"                        # features/step_definitions/auth_steps.rb:20
+    And I should not see "Alice Smith" in the match cards      # features/step_definitions/matching_steps.rb:185
+
+Feature: Messaging between users
+  As a signed-in user
+  I want to send and view messages
+  So I can coordinate skill exchanges
+
+  Background:                                                                                       # features/messaging.feature:6
+    Given a user exists named "Kiel" with email "kiel@columbia.edu" and password "secretpass"       # features/step_definitions/messaging_steps.rb:53
+    And a user exists named "John Student" with email "john@columbia.edu" and password "secretpass" # features/step_definitions/messaging_steps.rb:53
+    And a skill exchange request exists for "John Student" teaching "Python" and learning "Guitar"  # features/step_definitions/messaging_steps.rb:61
+    And I am signed in as "kiel@columbia.edu" with password "secretpass"                            # features/step_definitions/messaging_steps.rb:87
+
+  Scenario: Open a thread from the Explore card and send a message    # features/messaging.feature:12
+    When I visit the explore page                                     # features/step_definitions/session_steps.rb:9
+    And I click "Send message" on the request card for "John Student" # features/step_definitions/messaging_steps.rb:97
+    Then I should be on the message thread with "John Student"        # features/step_definitions/messaging_steps.rb:102
+    When I fill in "Message" with "Hey John, I can meet this week."   # features/step_definitions/auth_steps.rb:12
+    And I press "Send"                                                # features/step_definitions/auth_steps.rb:16
+    Then I should see "Sent."                                         # features/step_definitions/auth_steps.rb:20
+    And I should see "Hey John, I can meet this week."                # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Validation error on empty message                         # features/messaging.feature:21
+    When I visit the explore page                                     # features/step_definitions/session_steps.rb:9
+    And I click "Send message" on the request card for "John Student" # features/step_definitions/messaging_steps.rb:97
+    And I press "Send"                                                # features/step_definitions/auth_steps.rb:16
+    Then I should see "blank"                                         # features/step_definitions/auth_steps.rb:20
+
+  Scenario: See previous messages in the thread                                                 # features/messaging.feature:27
+    Given a message exists from "John Student" to "Kiel" with body "Yo, are you free Thursday?" # features/step_definitions/messaging_steps.rb:112
+    When I go to the message thread with "John Student"                                         # features/step_definitions/messaging_steps.rb:107
+    Then I should see "Yo, are you free Thursday?"                                              # features/step_definitions/auth_steps.rb:20
+
+Feature: User signup, login, and .edu verification
+  As a student
+  I want to create an account with my .edu email and log in
+  So I can use TeachMeBack safely
+
+  Background:                   # features/signup_login.feature:6
+    Given I am on the home page # features/step_definitions/auth_steps.rb:4
+
+  Scenario: Successful signup with .edu email        # features/signup_login.feature:9
+    When I follow "Sign up"                          # features/step_definitions/auth_steps.rb:8
+      Unable to find link "Sign up" (Capybara::ElementNotFound)
+      ./features/step_definitions/auth_steps.rb:9:in `"I follow {string}"'
+      features/signup_login.feature:10:in `I follow "Sign up"'
+    And I fill in "First name" with "Kiel"           # features/step_definitions/auth_steps.rb:12
+    And I fill in "Last name" with "Malate"          # features/step_definitions/auth_steps.rb:12
+    And I fill in "Email" with "km3851@columbia.edu" # features/step_definitions/auth_steps.rb:12
+    And I fill in "Password" with "secretpass"       # features/step_definitions/auth_steps.rb:12
+    And I press "Create Account"                     # features/step_definitions/auth_steps.rb:16
+    Then I should see "Account created successfully" # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Signup fails for non .edu email     # features/signup_login.feature:18
+    When I follow "Sign up"                     # features/step_definitions/auth_steps.rb:8
+      Unable to find link "Sign up" (Capybara::ElementNotFound)
+      ./features/step_definitions/auth_steps.rb:9:in `"I follow {string}"'
+      features/signup_login.feature:19:in `I follow "Sign up"'
+    And I fill in "First name" with "Kiel"      # features/step_definitions/auth_steps.rb:12
+    And I fill in "Last name" with "Malate"     # features/step_definitions/auth_steps.rb:12
+    And I fill in "Email" with "kiel@gmail.com" # features/step_definitions/auth_steps.rb:12
+    And I fill in "Password" with "secretpass"  # features/step_definitions/auth_steps.rb:12
+    And I press "Create Account"                # features/step_definitions/auth_steps.rb:16
+    Then I should see ".edu email required"     # features/step_definitions/auth_steps.rb:20
+
+  Scenario: Login and logout                                                       # features/signup_login.feature:27
+    Given a user exists with email "km3851@columbia.edu" and password "secretpass" # features/step_definitions/auth_steps.rb:32
+    When I follow "Log in"                                                         # features/step_definitions/auth_steps.rb:8
+      Unable to find link "Log in" (Capybara::ElementNotFound)
+      ./features/step_definitions/auth_steps.rb:9:in `"I follow {string}"'
+      features/signup_login.feature:29:in `I follow "Log in"'
+    And I fill in "Email" with "km3851@columbia.edu"                               # features/step_definitions/auth_steps.rb:12
+    And I fill in "Password" with "secretpass"                                     # features/step_definitions/auth_steps.rb:12
+    And I press "Log In"                                                           # features/step_definitions/auth_steps.rb:16
+    Then I should see "Logged in successfully"                                     # features/step_definitions/auth_steps.rb:20
+    And I should be on the dashboard page                                          # features/step_definitions/auth_steps.rb:24
+    When I press "Logout"                                                          # features/step_definitions/auth_steps.rb:16
+    Then I should be on the login page                                             # features/step_definitions/session_steps.rb:11
+
+Failing Scenarios:
+cucumber features/access_control.feature:21 # Scenario: Logged-out user is redirected from match page
+cucumber features/dashboard_basic.feature:12 # Scenario: Dashboard loads and shows cards
+cucumber features/explore_dashboard.feature:12 # Scenario: Guests do not see Explore in the nav
+cucumber features/matching.feature:18 # Scenario: User can send a TeachMeBack request
+cucumber features/matching.feature:26 # Scenario: Button shows "Request Sent" after sending a request
+cucumber features/matching.feature:33 # Scenario: Users get matched when both send requests to each other
+cucumber features/matching.feature:41 # Scenario: Matched users see "Matched!" button instead of request button
+cucumber features/matching.feature:49 # Scenario: User cannot send request to themselves
+cucumber features/matching.feature:54 # Scenario: User cannot send duplicate requests
+cucumber features/matching.feature:62 # Scenario: User can view their matches
+cucumber features/matching.feature:80 # Scenario: Match is created when second user sends request back
+cucumber features/matching.feature:90 # Scenario: Match works regardless of which user sends request first
+cucumber features/matching.feature:100 # Scenario: Multiple users can match with the same user
+cucumber features/matching.feature:113 # Scenario: Match persists after both users log out and back in
+cucumber features/matching.feature:127 # Scenario: Match shows correct other user information
+cucumber features/signup_login.feature:9 # Scenario: Successful signup with .edu email
+cucumber features/signup_login.feature:18 # Scenario: Signup fails for non .edu email
+cucumber features/signup_login.feature:27 # Scenario: Login and logout
+Undefined Scenarios:
+cucumber features/dashboard_rules.feature:5 # Scenario: Closed and expired requests are hidden
+cucumber features/dashboard_rules.feature:12 # Scenario: New request appears live
+
+38 scenarios (18 failed, 2 undefined, 18 passed)
+285 steps (18 failed, 51 skipped, 3 undefined, 213 passed)
+0m1.726s
+
+You can implement step definitions for undefined steps with these snippets:
+
+Given('a closed skill exchange request exists') do
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+Given('an expired skill exchange request exists') do
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+When('a new open request is created by {string} with teach {string} and learn {string}') do |string, string2, string3|
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
