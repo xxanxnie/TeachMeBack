@@ -98,3 +98,8 @@
 <% end %>
 <p><strong>Expires:</strong> <%= @skill_exchange_request.expires_after_days %> days from now</p>
 <p><em>Status:</em> <%= @skill_exchange_request.status.humanize %></p>
+<% if current_user != @skill_exchange_request.user %>
+  <p>
+    <%= link_to "Leave a Review", new_review_path(skill_exchange_request_id: @skill_exchange_request.id), class: "btn btn-primary" %>
+  </p>
+<% end %>

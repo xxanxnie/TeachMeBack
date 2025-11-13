@@ -34,6 +34,8 @@
             </div>
             <div class="text-muted small">Email (read‑only)</div>
             <div class="fw-medium"><%= @user.email %></div>
+              <%= @user.avg_rating&.round(2) || "Not yet rated" %>
+            </div>
           </div>
         </div>
       </div>
@@ -98,7 +100,7 @@
 
     <!-- Right: Profile details and Exchange activity -->
     <div class="col-lg-8">
-      
+            
 
       <!-- Skills I Can Teach -->
       <div class="card shadow-sm p-4">
@@ -175,6 +177,21 @@
           <p class="text-muted mb-0">No past exchanges yet.</p>
         <% end %>
       </div>
+      <!-- Received Reviews -->
+      <div class="card shadow-sm p-4 mt-3">
+        <h3 class="h5">What Others Say About Me</h3>
+        <hr>
+        <% if @user.received_reviews.any? %>
+          <% @user.received_reviews.each do |review| %>
+            <div class="mb-3">
+              <div class="fw-semibold">⭐ <%= review.rating %> from <%= review.reviewer.full_name %></div>
+              <div class="text-muted"><%= review.content %></div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">No reviews yet. Once you complete a match, others can leave feedback here.</p>
+        <% end %>
+      </div>      
     </div>
   </div>
 </div>
