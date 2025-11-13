@@ -21,7 +21,7 @@ Heroku: https://teachmeback-e9b7cdefef4f.herokuapp.com/
 - Added **Cucumber feature and RSpec tests** for access control, authentication, and dashboard/explore functionality.
 
 ## What We Accomplished (Iteration 2)
-- Implemented a filtering system that lets users search for partners based on skill category, location, availability, experience level, and optional preferences. These filters are processed in the backend through query parameters and ActiveRecord queries, and the UI supports toggles and sorting options.
+- Implemented a filtering system that lets users search for partners based on student/instructor role, skill category, and days they are available. These filters are processed in the backend through query parameters and ActiveRecord queries, and the UI supports toggle-style filtering and sorting options.
 - Built the reciprocal matching logic. When one user sends a skill-exchange request to another, we store that request. If the second user sends a request back—whether for the same skill or a different one—we detect a mutual match, create a Match record, notify both users, and automatically create a chat channel.
 - Implemented the messaging system so matched users can communicate. Each match spawns a Conversation model, and messages store the sender, content, and timestamp. We use ActionCable/WebSockets for real-time chat, and only the two matched users can access the conversation.
 - With these features, we now have the full core loop: users can discover others, match, and chat after meeting.
