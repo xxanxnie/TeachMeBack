@@ -4,11 +4,10 @@
   <ul>
     <% @partners.each do |u| %>
       <li>
-        <%= link_to (u.full_name.presence || u.email), message_thread_path(u.id) %>
+        <%= link_to (u.full_name.presence || u.email), message_thread_path(with: u.id) %>
       </li>
     <% end %>
   </ul>
 <% else %>
   <p>No conversations yet.</p>
 <% end %>
-
