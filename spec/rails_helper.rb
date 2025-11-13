@@ -14,8 +14,11 @@ RSpec.configure do |config|
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')
   ]
+
   config.use_transactional_fixtures = true
+
   config.filter_rails_from_backtrace!
+
 end
 # Enable shoulda-matchers for model association and validation tests
 Shoulda::Matchers.configure do |config|

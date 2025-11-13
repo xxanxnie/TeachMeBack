@@ -77,8 +77,10 @@ RSpec.describe "User Profile", type: :request do
             user: user,
             teach_skill: "Guitar",
             teach_level: "intermediate",
+            teach_category: "music_art",
             learn_skill: "Python",
             learn_level: "beginner",
+            learn_category: "tech_academics",
             offer_hours: 5,
             modality: "in_person",
             expires_after_days: 30,
@@ -92,8 +94,10 @@ RSpec.describe "User Profile", type: :request do
             user: user,
             teach_skill: "JavaScript",
             teach_level: "advanced",
+            teach_category: "tech_academics",
             learn_skill: "Photography",
             learn_level: "beginner",
+            learn_category: "other",
             offer_hours: 10,
             modality: "remote",
             expires_after_days: 60,
@@ -107,8 +111,10 @@ RSpec.describe "User Profile", type: :request do
             user: user,
             teach_skill: "Cooking",
             teach_level: "intermediate",
+            teach_category: "other",
             learn_skill: "Dancing",
             learn_level: "beginner",
+            learn_category: "other",
             offer_hours: 3,
             modality: "hybrid",
             expires_after_days: 30,
@@ -256,4 +262,3 @@ RSpec.describe "User Profile", type: :request do
     end
   end
 end
-

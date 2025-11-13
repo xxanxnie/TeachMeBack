@@ -89,7 +89,7 @@ RSpec.describe "User Signup", type: :request do
           post users_path, params: invalid_params
         }.not_to change(User, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include(".edu email required")
       end
 
@@ -107,7 +107,7 @@ RSpec.describe "User Signup", type: :request do
         invalid_params[:user][:email] = ""
         
         post users_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Create your account")
       end
     end
