@@ -14,7 +14,7 @@ class User < ApplicationRecord
            class_name: "Message",
            foreign_key: :recipient_id,
            dependent: :destroy
--
+
   has_secure_password
 
   validates :name, presence: true
@@ -44,6 +44,8 @@ class User < ApplicationRecord
 
   def has_received_request_from?(other_user)
     received_skill_requests.exists?(requester_id: other_user.id)
+  end
+
   def message_label
     full_name.presence || email.to_s
   end
@@ -78,4 +80,3 @@ class User < ApplicationRecord
     self.edu_verified = email&.end_with?(".edu")
   end
 end
-
