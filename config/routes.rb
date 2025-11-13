@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   # Authentication routes
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
+  get '/logout', to: 'sessions#destroy'
 
   # User routes
   get '/signup', to: 'users#new'
@@ -29,4 +29,3 @@ Rails.application.routes.draw do
   resources :messages, only: [:index, :new, :create]
   get 'messages/thread', to: 'messages#thread', as: :message_thread
 end
-
