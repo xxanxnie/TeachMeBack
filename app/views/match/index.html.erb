@@ -1,5 +1,66 @@
-<h1>Match</h1>
-<p>This is the match page. Placeholder content goes here.</p>
-<% if @loading %>
-  <%= render 'shared/loading_spinner' %>
-<% end %>
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="mb-1">Your Matches</h1>
+          <p class="text-muted small">Users you've matched with</p>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            Mutual Matches
+            <span class="badge bg-primary ms-2"><%= @matches.count %></span>
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if @matches.any? %>
+            <div class="row">
+              <% @matches.each do |match| %>
+                <% other_user = match.other_user(current_user) %>
+                <div class="col-12 col-md-6 col-lg-4 mb-3">
+                  <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-weight: bold; font-size: 1.5rem;">
+                          <%= (other_user.full_name.to_s.split.map { |n| n[0] }.join.first(2).presence || "TM").upcase %>
+                        </div>
+                        <div class="flex-grow-1">
+                          <h5 class="mb-0"><%= other_user.full_name %></h5>
+                          <p class="text-muted small mb-0"><%= other_user.email %></p>
+                        </div>
+                      </div>
+                      
+                      <% if other_user.bio.present? %>
+                        <p class="text-muted small mb-3"><%= other_user.bio.truncate(100) %></p>
+                      <% end %>
+
+                      <div class="d-flex gap-2">
+                        <button class="btn btn-primary flex-grow-1" disabled>
+                          💬 Chat (Coming Soon)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-5">
+              <div class="mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-heart text-muted" viewBox="0 0 16 16">
+                  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                </svg>
+              </div>
+              <h5 class="text-muted">No matches yet</h5>
+              <p class="text-muted">Start exploring and send requests to find your matches!</p>
+              <%= link_to "Explore", explore_path, class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
