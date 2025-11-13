@@ -22,4 +22,9 @@ Rails.application.routes.draw do
   post '/users', to: 'users#create'
   get '/profile', to: 'users#edit'
   patch '/profile', to: 'users#update'
+
+  # Messaging routes (safe, query-param based)
+  resources :messages, only: [:index, :new, :create]
+  get 'messages/thread', to: 'messages#thread', as: :message_thread
 end
+

@@ -1,33 +1,51 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container-fluid">
-    <%= link_to "TeachMeBack", current_user ? explore_path : root_path, class: "navbar-brand" %>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <!-- Brand (left) -->
+    <%= link_to "TeachMeBack", root_path, class: "navbar-brand fw-bold" %>
+
+    <!-- Mobile toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
+    <!-- All nav links on the right -->
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <%= link_to "Explore", explore_path, class: "nav-link #{'active' if current_page?(explore_path)}" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Match", match_path, class: "nav-link #{'active' if current_page?(match_path)}" %>
+        </li>
+
         <% if current_user %>
           <li class="nav-item">
-            <%= link_to 'Explore', explore_path, class: 'nav-link' %>
+            <%= link_to messages_path, class: "nav-link d-flex align-items-center" do %>
+              Messages
+              <% count = current_user.unread_messages_count.to_i %>
+              <% if count.positive? %>
+                <span class="badge rounded-pill bg-danger ms-1"><%= count %></span>
+              <% end %>
+            <% end %>
           </li>
           <li class="nav-item">
-            <%= link_to 'Match', match_path, class: 'nav-link' %>
+            <%= link_to "Profile", profile_path, class: "nav-link #{'active' if current_page?(profile_path)}" %>
           </li>
           <li class="nav-item">
-            <%= link_to 'Profile', profile_path, class: 'nav-link' %>
-          </li>
-          <li class="nav-item">
-            <%= button_to "Logout", logout_path, method: :delete, class: "btn btn-link nav-link px-0", form_class: "d-inline" %>
+            <%= link_to "Logout", logout_path, method: :delete, class: "nav-link" %>
           </li>
         <% else %>
           <li class="nav-item">
-            <%= link_to 'Sign up', signup_path, class: 'nav-link' %>
+            <%= link_to "Login", login_path, class: "nav-link #{'active' if current_page?(login_path)}" %>
           </li>
           <li class="nav-item">
-            <%= link_to 'Log in', login_path, class: 'nav-link' %>
+            <%= link_to "Signup", signup_path, class: "nav-link #{'active' if current_page?(signup_path)}" %>
           </li>
         <% end %>
       </ul>
     </div>
   </div>
 </nav>
+

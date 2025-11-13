@@ -1,0 +1,14 @@
+<h1>Your Messages</h1>
+
+<% if @partners.any? %>
+  <ul>
+    <% @partners.each do |u| %>
+      <li>
+        <%= link_to (u.full_name.presence || u.email), message_thread_path(u.id) %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No conversations yet.</p>
+<% end %>
+
