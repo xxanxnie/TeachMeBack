@@ -1,7 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
   <div class="container">
     <!-- Brand (left) -->
-    <%= link_to "TeachMeBack", root_path, class: "navbar-brand fw-bold" %>
+    <%= link_to "TeachMeBack",
+                (user_signed_in? ? explore_path : root_path),
+                class: "navbar-brand fw-bold" %>
 
     <!-- Mobile toggle -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -20,7 +22,7 @@
           <%= link_to "Match", match_path, class: "nav-link #{'active' if current_page?(match_path)}" %>
         </li>
 
-        <% if current_user %>
+        <% if user_signed_in? %>
           <li class="nav-item">
             <%= link_to messages_path, class: "nav-link d-flex align-items-center" do %>
               Messages
@@ -34,7 +36,11 @@
             <%= link_to "Profile", profile_path, class: "nav-link #{'active' if current_page?(profile_path)}" %>
           </li>
           <li class="nav-item">
-            <%= link_to "Logout", logout_path, method: :delete, class: "nav-link" %>
+            <%= link_to "Logout",
+                        logout_path,
+                        method: :delete,
+                        data: { turbo_method: :delete, turbo_confirm: "Log out?" },
+                        class: "nav-link" %>
           </li>
         <% else %>
           <li class="nav-item">
@@ -48,4 +54,3 @@
     </div>
   </div>
 </nav>
-
