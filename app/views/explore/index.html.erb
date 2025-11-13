@@ -1,5 +1,147 @@
-<h1>Explore</h1>
-<p>This is the explore page. Placeholder content goes here.</p>
-<% if @loading %>
-  <%= render 'shared/loading_spinner' %>
-<% end %>
+<div class="container-fluid py-4" data-controller="search">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="mb-1">Explore Skill Exchanges</h1>
+          <p class="text-muted small">Connect with peers to teach and learn new skills</p>
+        </div>
+        <%= link_to "Create New Request", new_skill_exchange_request_path, class: "btn btn-primary" %>
+      </div>
+
+      <!-- Search Form -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <div class="input-group input-group-lg">
+            <span class="input-group-text">🔍</span>
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Search by skill, name, or modality (e.g., Python, John, Remote)..." 
+              value="<%= @query %>"
+              data-search-target="input"
+              data-action="input->search#filter">
+          </div>
+        </div>
+      </div>
+
+      <!-- Compact / Collapsible Filters -->
+      <div class="d-flex align-items-center mb-2">
+        <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">
+          Filters
+        </button>
+        <div class="ms-3 small text-muted">
+          <% selected = [] %>
+          <% if (@filters || {}).dig(:roles).present? %>
+            <% selected << "Role: " + (@filters[:roles].map { |r| r.capitalize }.join(", ")) %>
+          <% end %>
+          <% if (@filters || {}).dig(:categories).present? %>
+            <%# show categories like "Music/Art", "Tech/Academics" %>
+            <% selected << "Category: " + (@filters[:categories].map { |c| c.split('_').map(&:capitalize).join('/') }.join(", ")) %>
+          <% end %>
+          <% if (@filters || {}).dig(:days).present? %>
+            <% selected << "Days: " + (@filters[:days].map(&:capitalize).join(", ")) %>
+          <% end %>
+          <%= (selected.any? ? selected.join(" · ") : "No filters") %>
+        </div>
+      </div>
+
+      <div class="collapse" id="filtersCollapse">
+        <div class="card mb-4">
+          <div class="card-body py-3 px-3">
+            <%= form_with url: explore_path, method: :get, local: true, html: { class: "row g-2" } do %>
+              <!-- First row: "I'm a" + Category inline -->
+              <div class="col-12 d-flex align-items-center gap-4 flex-wrap">
+                <div class="d-flex flex-column">
+                  <label class="form-label small mb-1 fw-bold">I'm a</label>
+                  <div class="btn-group" role="group" aria-label="role">
+                    <%= check_box_tag "role[]", "student", (@filters[:roles] || []).include?("student"), id: "role_student", class: "btn-check", autocomplete: "off" %>
+                    <%= label_tag "role_student", "Student", class: "btn btn-outline-primary btn-sm me-1" %>
+                    <%= check_box_tag "role[]", "instructor", (@filters[:roles] || []).include?("instructor"), id: "role_instructor", class: "btn-check", autocomplete: "off" %>
+                    <%= label_tag "role_instructor", "Instructor", class: "btn btn-outline-primary btn-sm" %>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-column flex-grow-1">
+                  <label class="form-label small mb-1 fw-bold">Category</label>
+                  <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <%= check_box_tag "categories[]", "music_art", (@filters[:categories] || []).include?("music_art"), id: "cat_music_art", class: "btn-check", autocomplete: "off" %>
+                    <%= label_tag "cat_music_art", "🎵 Music/Art", class: "btn btn-outline-primary btn-sm" %>
+
+                    <%= check_box_tag "categories[]", "tech_academics", (@filters[:categories] || []).include?("tech_academics"), id: "cat_tech", class: "btn-check", autocomplete: "off" %>
+                    <%= label_tag "cat_tech", "💻 Tech/Academics", class: "btn btn-outline-primary btn-sm" %>
+
+                    <%= check_box_tag "categories[]", "sports_fitness", (@filters[:categories] || []).include?("sports_fitness"), id: "cat_sports", class: "btn-check", autocomplete: "off" %>
+                    <%= label_tag "cat_sports", "🏸 Sports/Fitness", class: "btn btn-outline-primary btn-sm" %>
+
+                    <%= check_box_tag "categories[]", "language", (@filters[:categories] || []).include?("language"), id: "cat_language", class: "btn-check", autocomplete: "off" %>
+                    <%= label_tag "cat_language", "🌏 Language", class: "btn btn-outline-primary btn-sm" %>
+
+                    <%= check_box_tag "categories[]", "other", (@filters[:categories] || []).include?("other"), id: "cat_other", class: "btn-check", autocomplete: "off" %>
+                    <%= label_tag "cat_other", "✨ Other", class: "btn btn-outline-primary btn-sm" %>
+                  </div>
+                </div>
+
+                <div class="ms-auto d-flex align-items-end gap-2">
+                  <%= submit_tag "Apply", class: "btn btn-primary btn-sm" %>
+                  <%= link_to "Clear", explore_path, class: "btn btn-outline-secondary btn-sm" %>
+                </div>
+              </div>
+
+              <!-- Second row: Available on -->
+              <div class="col-12 mt-2">
+                <label class="form-label small mb-2 fw-bold">Available on</label>
+                <div class="d-flex gap-2 flex-wrap">
+                  <% %w[mon tue wed thu fri sat sun].each do |d| %>
+                    <%= check_box_tag "days[]", d, (@filters[:days] || []).include?(d), id: "day_#{d}", class: "btn-check", autocomplete: "off" %>
+                    <%= label_tag "day_#{d}", d.capitalize, class: "btn btn-outline-primary btn-sm" %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+           </div>
+         </div>
+       </div>
+
+      <!-- Stats and Results -->
+      <% count = @skill_requests.size %>
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              Open Skill Exchange Requests
+              <span class="badge bg-primary ms-2" id="request-count"><%= count %></span>
+            </h5>
+          </div>
+        </div>
+        <div class="card-body">
+          <% if @skill_requests.any? %>
+            <%= turbo_stream_from "skill_exchange_requests" %>
+            <div class="row" id="ser_list" data-search-target="list">
+              <% @skill_requests.each do |request| %>
+                <%= render "skill_exchange_requests/skill_request", skill_request: request %>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-5">
+              <div class="mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-inbox text-muted" viewBox="0 0 16 16">
+                  <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 8 9h4.46l-3.05-3.812A.5.5 0 0 0 9.02 4H4.98zm9.954 5H10.45a2.5 2.5 0 0 1-4.9 0H1.066l.32 2.562a.5.5 0 0 0 .497.438h12.234a.5.5 0 0 0 .496-.438L14.933 9zM3.809 3.563A1.5 1.5 0 0 1 4.981 3h4.038a1.5 1.5 0 0 1 1.172.563l3.7 4.625a.5.5 0 0 1 .128.384V14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 .128-.384l3.7-4.625z"/>
+                </svg>
+              </div>
+              <% if defined?(@total_open_requests) && @total_open_requests.to_i > 0 %>
+                <h5 class="text-muted">No requests match your filters</h5>
+                <p class="text-muted">Try clearing or widening your filters to see more results.</p>
+              <% else %>
+                <h5 class="text-muted">No open skill exchange requests</h5>
+                <p class="text-muted">Be the first to create one!</p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render "explore/profile_modal" %>

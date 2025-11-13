@@ -4,8 +4,20 @@ class User < ApplicationRecord
   has_many :received_skill_requests, class_name: "UserSkillRequest", foreign_key: "receiver_id", dependent: :destroy
   has_many :matches_as_user1, class_name: "Match", foreign_key: "user1_id", dependent: :destroy
   has_many :matches_as_user2, class_name: "Match", foreign_key: "user2_id", dependent: :destroy
+
+  has_many :sent_messages,
+           class_name: "Message",
+           foreign_key: :sender_id,
+           dependent: :destroy
+
+  has_many :received_messages,
+           class_name: "Message",
+           foreign_key: :recipient_id,
+           dependent: :destroy
+-
   has_secure_password
-  validates :name,  presence: true
+
+  validates :name, presence: true
   validates :email, presence: true
   validate  :edu_email_only
 
@@ -32,6 +44,19 @@ class User < ApplicationRecord
 
   def has_received_request_from?(other_user)
     received_skill_requests.exists?(requester_id: other_user.id)
+  def message_label
+    full_name.presence || email.to_s
+  end
+
+  def thread_partners
+    sent_ids     = Message.where(sender_id: id).pluck(:recipient_id)
+    received_ids = Message.where(recipient_id: id).pluck(:sender_id)
+    partner_ids  = (sent_ids + received_ids).uniq - [id]
+    User.where(id: partner_ids)
+  end
+
+  def unread_messages_count
+    Message.where(recipient_id: id, read_at: nil).count
   end
 
   private
@@ -43,8 +68,6 @@ class User < ApplicationRecord
     end
   end
 
-  private
-
   def edu_email_only
     unless email&.end_with?(".edu")
       errors.add(:email, ".edu email required")
@@ -55,3 +78,4 @@ class User < ApplicationRecord
     self.edu_verified = email&.end_with?(".edu")
   end
 end
+

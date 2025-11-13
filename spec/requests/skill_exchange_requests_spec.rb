@@ -27,8 +27,10 @@ RSpec.describe "SkillExchangeRequests", type: :request do
         skill_exchange_request: {
           teach_skill: "Guitar",
           teach_level: "intermediate",
+          teach_category: "music_art",
           learn_skill: "Python",
           learn_level: "beginner",
+          learn_category: "tech_academics",
           offer_hours: 5,
           modality: "in_person",
           expires_after_days: 30,
@@ -50,7 +52,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
         post skill_exchange_requests_path, params: valid_params
         expect(response).to redirect_to(explore_path)
         follow_redirect!
-        expect(response.body).to include("posted successfully")
+        expect(response.body).to include("Posted.")
       end
 
       it "sets the correct attributes" do
@@ -100,7 +102,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Teach skill")
       end
 
@@ -112,7 +114,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "does not create a request when no availability days are selected" do
@@ -123,7 +125,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to match(/at least one day/)
       end
 
@@ -135,7 +137,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "does not create a request when offer_hours is zero" do
@@ -146,7 +148,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "does not create a request when expires_after_days is too low" do
@@ -157,7 +159,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "does not create a request when expires_after_days is too high" do
@@ -168,7 +170,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "does not create a request when modality is invalid" do
@@ -179,7 +181,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "does not create a request when learning_goal is too long" do
@@ -190,7 +192,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
           post skill_exchange_requests_path, params: invalid_params
         }.not_to change(SkillExchangeRequest, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -213,10 +215,10 @@ RSpec.describe "SkillExchangeRequests", type: :request do
     end
 
     context "when not logged in" do
-      it "redirects to root" do
+      it "redirects to login" do
         delete "/logout"
         post skill_exchange_requests_path, params: valid_params
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(login_path)
       end
     end
   end
@@ -227,8 +229,10 @@ RSpec.describe "SkillExchangeRequests", type: :request do
         user: user,
         teach_skill: "Guitar",
         teach_level: "intermediate",
+        teach_category: "music_art",
         learn_skill: "Python",
         learn_level: "beginner",
+        learn_category: "tech_academics",
         offer_hours: 5,
         modality: "in_person",
         expires_after_days: 30,
@@ -249,8 +253,10 @@ RSpec.describe "SkillExchangeRequests", type: :request do
         user: other_user,
         teach_skill: "Guitar",
         teach_level: "intermediate",
+        teach_category: "music_art",
         learn_skill: "Python",
         learn_level: "beginner",
+        learn_category: "tech_academics",
         offer_hours: 5,
         modality: "in_person",
         expires_after_days: 30,
@@ -263,8 +269,8 @@ RSpec.describe "SkillExchangeRequests", type: :request do
   end
 
   describe "GET /requests" do
-    let!(:request1) { SkillExchangeRequest.create!(user: user, teach_skill: "Guitar", teach_level: "intermediate", learn_skill: "Python", learn_level: "beginner", offer_hours: 5, modality: "in_person", expires_after_days: 30, availability_days: [1, 3]) }
-    let!(:request2) { SkillExchangeRequest.create!(user: user, teach_skill: "Cooking", teach_level: "advanced", learn_skill: "Spanish", learn_level: "beginner", offer_hours: 3, modality: "remote", expires_after_days: 60, availability_days: [0, 2]) }
+    let!(:request1) { SkillExchangeRequest.create!(user: user, teach_skill: "Guitar", teach_level: "intermediate", teach_category: "music_art", learn_skill: "Python", learn_level: "beginner", learn_category: "tech_academics", offer_hours: 5, modality: "in_person", expires_after_days: 30, availability_days: [1, 3]) }
+    let!(:request2) { SkillExchangeRequest.create!(user: user, teach_skill: "Cooking", teach_level: "advanced", teach_category: "other", learn_skill: "Spanish", learn_level: "beginner", learn_category: "language", offer_hours: 3, modality: "remote", expires_after_days: 60, availability_days: [0, 2]) }
 
     it "returns http success" do
       get "/requests"
