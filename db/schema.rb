@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_12_223325) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_01_170640) do
   create_table "matches", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "status", default: "mutual", null: false
@@ -82,6 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_12_223325) do
     t.string "password_digest"
     t.string "university"
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "matches", "users", column: "user1_id"
