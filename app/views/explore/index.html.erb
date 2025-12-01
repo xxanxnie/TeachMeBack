@@ -12,16 +12,19 @@
       <!-- Search Form -->
       <div class="card mb-4 shadow-sm">
         <div class="card-body">
-          <div class="input-group input-group-lg">
-            <span class="input-group-text">🔍</span>
-            <input 
-              type="text" 
-              class="form-control" 
-              placeholder="Search by skill, name, or modality (e.g., Python, John, Remote)..." 
-              value="<%= @query %>"
-              data-search-target="input"
-              data-action="input->search#filter">
-          </div>
+          <%= form_with url: explore_path, method: :get, local: true, html: { class: "mb-0" } do %>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text">🔍</span>
+              <input 
+                type="text" 
+                name="q"
+                class="form-control" 
+                placeholder="Search by skill (e.g., learn guitar, teach piano, violin)..." 
+                value="<%= @query %>"
+                data-search-target="input"
+                data-action="input->search#filter">
+            </div>
+          <% end %>
         </div>
       </div>
 
