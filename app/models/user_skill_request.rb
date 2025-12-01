@@ -1,8 +1,10 @@
 class UserSkillRequest < ApplicationRecord
   belongs_to :requester, class_name: "User"
   belongs_to :receiver, class_name: "User"
+  belongs_to :skill_exchange_request, optional: true
 
   validates :skill, presence: true
+  validates :skill_exchange_request_id, uniqueness: { scope: [:requester_id, :receiver_id], allow_nil: true }
   validate :cannot_request_self
 
   after_create :check_for_reciprocal_match
@@ -34,4 +36,3 @@ class UserSkillRequest < ApplicationRecord
     end
   end
 end
-

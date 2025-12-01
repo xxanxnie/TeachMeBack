@@ -3,23 +3,27 @@ class UserSkillRequestsController < ApplicationController
 
   def create
     @receiver = User.find(params[:receiver_id])
-    @skill = params[:skill] || "general"
-    
-    # Check if request already exists
+    @skill_exchange_request = SkillExchangeRequest.find_by(id: params[:skill_exchange_request_id])
+    @skill = params[:skill].presence || @skill_exchange_request&.teach_skill || "general"
+
+    # Check if request already exists for this posting/skill
     existing_request = UserSkillRequest.find_by(
       requester_id: current_user.id,
-      receiver_id: @receiver.id
+      receiver_id: @receiver.id,
+      skill_exchange_request_id: @skill_exchange_request&.id,
+      skill: @skill
     )
 
     if existing_request
-      redirect_back(fallback_location: explore_path, alert: "You have already sent a request to this user.")
+      redirect_back(fallback_location: explore_path, alert: "You have already sent a request for this posting.")
       return
     end
 
     @user_skill_request = UserSkillRequest.new(
       requester: current_user,
       receiver: @receiver,
-      skill: @skill
+      skill: @skill,
+      skill_exchange_request: @skill_exchange_request
     )
 
     if @user_skill_request.save
@@ -49,4 +53,3 @@ class UserSkillRequestsController < ApplicationController
     end
   end
 end
-
