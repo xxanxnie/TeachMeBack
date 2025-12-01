@@ -1,3 +1,85 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="h4 mb-0">Skill Exchange Request</h2>
+            <p class="text-muted mb-0">Posted by <strong><%= @skill_exchange_request.user.full_name %></strong></p>
+          </div>
+          <span class="badge <%= @skill_exchange_request.status_open? ? 'bg-success' : @skill_exchange_request.status_matched? ? 'bg-primary' : 'bg-secondary' %>">
+            <%= @skill_exchange_request.status.humanize %>
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <h3 class="h5">Teaching</h3>
+            <p class="mb-1 fw-semibold"><%= @skill_exchange_request.teach_skill %></p>
+            <p class="text-muted small mb-0">
+              Level: <%= @skill_exchange_request.teach_level.humanize %> ·
+              Category: <%= @skill_exchange_request.teach_category_label %>
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <h3 class="h5">Learning</h3>
+            <p class="mb-1 fw-semibold"><%= @skill_exchange_request.learn_skill %></p>
+            <p class="text-muted small mb-0">
+              Level: <%= @skill_exchange_request.learn_level.humanize %> ·
+              Category: <%= @skill_exchange_request.learn_category_label %>
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <h3 class="h6 text-uppercase text-muted">Details</h3>
+            <p class="mb-1">
+              <strong>Modality:</strong> <%= @skill_exchange_request.modality.humanize %>
+            </p>
+            <p class="mb-1">
+              <strong>Offer:</strong> <%= @skill_exchange_request.offer_hours %> hours/week
+            </p>
+            <% raw_avail = (defined?(SkillExchangeRequest::DAYS) && @skill_exchange_request.respond_to?(:availability_days)) ? Array(@skill_exchange_request.availability_days) : [] %>
+            <% if raw_avail.any? %>
+              <% display_days = raw_avail.map { |i| SkillExchangeRequest::DAYS[i.to_i] rescue nil }.compact.join(", ") %>
+              <p class="mb-1">
+                <strong>Availability:</strong> <%= display_days %>
+              </p>
+            <% end %>
+            <p class="mb-0 text-muted small">
+              Expires after <%= @skill_exchange_request.expires_after_days %> days
+            </p>
+          </div>
+
+          <% if @skill_exchange_request.learning_goal.present? %>
+            <div class="mb-3">
+              <h3 class="h6 text-uppercase text-muted">Learning Goal</h3>
+              <p class="mb-0"><%= simple_format(@skill_exchange_request.learning_goal) %></p>
+            </div>
+          <% end %>
+
+          <% if @skill_exchange_request.notes.present? %>
+            <div class="mb-3">
+              <h3 class="h6 text-uppercase text-muted">Notes</h3>
+              <p class="mb-0"><%= simple_format(@skill_exchange_request.notes) %></p>
+            </div>
+          <% end %>
+
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <%= link_to "Back to Profile", profile_path, class: "btn btn-outline-secondary" %>
+            <% if @skill_exchange_request.status_open? %>
+              <%= button_to "Mark as completed",
+                            skill_exchange_request_path(@skill_exchange_request),
+                            method: :patch,
+                            params: { skill_exchange_request: { status: :closed } },
+                            class: "btn btn-success" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- app/views/skill_exchange_requests/show.html.erb -->
 <h1>Your Skill Exchange Request</h1>
 

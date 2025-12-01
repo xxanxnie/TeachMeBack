@@ -24,14 +24,17 @@ class UserSkillRequestsController < ApplicationController
 
     if @user_skill_request.save
       @user_skill_request.reload
-      
+
       user_ids = [current_user.id, @receiver.id].sort
       match = Match.find_by(user1_id: user_ids[0], user2_id: user_ids[1])
-      
+
       if match
-        redirect_back(fallback_location: explore_path, notice: "Congrats, it's a match! You and #{@receiver.full_name} expressed interest in each other!")
+        # On mutual match, take the user straight into the messaging thread.
+        redirect_to message_thread_path(with: @receiver.id),
+                    notice: "Congrats, it's a match! You and #{@receiver.full_name} expressed interest in each other. Start chatting!"
       else
-        redirect_back(fallback_location: explore_path, notice: "Request sent to #{@receiver.full_name}.")
+        redirect_back(fallback_location: explore_path,
+                      notice: "Request sent to #{@receiver.full_name}.")
       end
     else
       redirect_back(fallback_location: explore_path, alert: @user_skill_request.errors.full_messages.to_sentence)

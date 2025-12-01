@@ -93,6 +93,56 @@ Then("a skill exchange request should exist with teach skill {string}") do |teac
   end
 end
 
+Given("I have an open skill exchange request teaching {string} and learning {string}") do |teach, learn|
+  user = User.first || raise("No users present to attach skill exchange request to")
+
+  SkillExchangeRequest.find_or_create_by!(
+    user: user,
+    teach_skill: teach,
+    learn_skill: learn
+  ) do |req|
+    req.teach_level = "intermediate"
+    req.learn_level = "beginner"
+    req.modality = "remote"
+    req.offer_hours = 2
+    req.expires_after_days = 30
+    req.status = "open"
+    req.availability_days = [1, 3]
+
+    if SkillExchangeRequest.column_names.include?("teach_category")
+      req.teach_category = "music_art"
+    end
+    if SkillExchangeRequest.column_names.include?("learn_category")
+      req.learn_category = "tech_academics"
+    end
+  end
+end
+
+When("I visit my profile page") do
+  visit "/profile"
+end
+
+Then("I should see {string} in my active skill exchange list") do |teach_skill|
+  within(".card", text: "Active Skill Exchange Requests") do
+    expect(page).to have_content(teach_skill)
+  end
+end
+
+Then("I should see {string} in my history skill exchange list") do |teach_skill|
+  within(".card", text: "History / Past Exchanges") do
+    expect(page).to have_content(teach_skill)
+  end
+end
+
+When("I click {string} on my {string} active request") do |button_text, teach_skill|
+  within(".card", text: "Active Skill Exchange Requests") do
+    row = page.find("li", text: teach_skill)
+    within(row) do
+      click_button(button_text)
+    end
+  end
+end
+
 # Helper step for viewing a skill exchange request
 When("I view the skill exchange request with teach skill {string}") do |teach_skill|
   request = SkillExchangeRequest.find_by(teach_skill: teach_skill)
