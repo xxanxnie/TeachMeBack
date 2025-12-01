@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "pm-rating" do %>
+  <%= @reviewee.average_rating || "—" %>
+<% end %>
+
+<%= turbo_stream.prepend "pm-reviews" do %>
+  <li><%= @review.rating %>★ — <%= @review.content %></li>
+<% end %>

@@ -70,7 +70,7 @@
               <%= button_to "Mark as completed",
                             skill_exchange_request_path(@skill_exchange_request),
                             method: :patch,
-                            params: { skill_exchange_request: { status: :closed } },
+                            params: { skill_exchange_request: { status: :closed }, partner_id: @other_user.id },
                             class: "btn btn-success" %>
             <% end %>
           </div>

@@ -1,6 +1,7 @@
 # app/models/skill_exchange_request.rb
 class SkillExchangeRequest < ApplicationRecord
     belongs_to :user
+    belongs_to :partner, class_name: "User", optional: true
 
     DAYS = %w[Mon Tue Wed Thu Fri Sat Sun].freeze
 
@@ -131,5 +132,12 @@ class SkillExchangeRequest < ApplicationRecord
         next unless idx
         self.availability_mask |= (1 << idx)
       end
+    end
+
+    def partner_for(current_user)
+      # Find the match between the request owner and the current user
+      match = Match.find_by(user1_id: [user.id, current_user.id].min,
+                            user2_id: [user.id, current_user.id].max)
+      match&.other_user(current_user)
     end
   end

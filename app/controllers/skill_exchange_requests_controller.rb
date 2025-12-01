@@ -70,13 +70,29 @@ class SkillExchangeRequestsController < ApplicationController
       end
 
       if @skill_exchange_request.update(skill_exchange_request_update_params)
-        redirect_back(fallback_location: profile_path,
-                      notice: "Skill exchange request updated.")
+        if @skill_exchange_request.status == "closed"
+          # Find the UserSkillRequest that links this request owner to an interested user
+          usr = UserSkillRequest.find_by(
+            receiver_id: @skill_exchange_request.user_id,
+            skill: @skill_exchange_request.teach_skill
+          )
+
+          if usr
+            @skill_exchange_request.update(partner_id: usr.requester_id)
+          end
+
+          redirect_to new_review_path(skill_exchange_request_id: @skill_exchange_request.id),
+                  notice: "Skill exchange marked as completed. Please leave a review."
+        else
+          redirect_back(fallback_location: profile_path,
+                    notice: "Skill exchange request updated.")
+        end
       else
         redirect_back(fallback_location: profile_path,
-                      alert: @skill_exchange_request.errors.full_messages.to_sentence)
+                  alert: @skill_exchange_request.errors.full_messages.to_sentence)
       end
     end
+
   
     def create
       @skill_exchange_request = current_user.skill_exchange_requests.build(skill_exchange_request_params)

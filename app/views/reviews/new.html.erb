@@ -1,19 +1,19 @@
 <h1>Leave a Review</h1>
 
-<%= form_with model: @review, url: review_create_path, local: true do |f| %>
+<%= form_with model: @review, url: reviews_path, local: false do |f| %>
   <%= hidden_field_tag :skill_exchange_request_id, @request.id %>
 
-  <div class="field">
-    <%= f.label :rating, "Rating (1 to 5)" %><br>
-    <%= f.number_field :rating, in: 1..5, step: 1, required: true %>
+  <div class="mb-3">
+    <%= f.label :rating, "Rating (1 to 5)", class: "form-label" %>
+    <%= f.number_field :rating, in: 1..5, step: 1, class: "form-control", required: true %>
   </div>
 
-  <div class="field">
-    <%= f.label :content, "Your Feedback" %><br>
-    <%= f.text_area :content, rows: 5, placeholder: "What was your experience like?", required: true %>
+  <div class="mb-3">
+    <%= f.label :content, "Your Feedback", class: "form-label" %>
+    <%= f.text_area :content, rows: 5, placeholder: "What was your experience like?", class: "form-control", required: true %>
   </div>
 
   <div class="actions">
-    <%= f.submit "Submit Review" %>
+    <%= f.submit "Submit Review", class: "btn btn-primary" %>
   </div>
 <% end %>

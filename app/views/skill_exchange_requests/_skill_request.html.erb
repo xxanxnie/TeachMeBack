@@ -20,12 +20,22 @@
             data-user-id="<%= skill_request.user_id %>"
             data-user-name="<%= skill_request.user.try(:full_name) || skill_request.user.name %>"
             data-user-bio="<%= skill_request.user.try(:bio) %>"
-            data-user-qual="<%= skill_request.user.try(:qualifications) %>">
+            data-user-qual="<%= skill_request.user.try(:qualifications) %>"
+            data-user-rating="<%= skill_request.user.average_rating %>"
+            data-user-reviews="<%= skill_request.user.received_reviews.order(created_at: :desc).limit(5).map { |r| "#{r.rating}★ — #{ERB::Util.html_escape(r.content.to_s)}" }.join(' || ') %>">
+
             <%= skill_request.user.try(:full_name) || skill_request.user.name %>
             <% if skill_request.user == current_user %>
               <span class="badge bg-secondary ms-2">me</span>
             <% end %>
           </button>
+
+          <% if current_user && current_user.id != skill_request.user_id %>
+            <%= link_to "Write a review",
+                        new_review_path(skill_exchange_request_id: skill_request.id),
+                        class: "btn btn-outline-primary btn-sm mt-2" %>
+          <% end %>
+
         </div>
       </div>
 

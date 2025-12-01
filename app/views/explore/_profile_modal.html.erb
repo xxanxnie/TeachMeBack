@@ -3,26 +3,49 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 id="profileModalLabel" class="modal-title">Profile</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <div class="mb-2"><strong>Name:</strong> <span id="pm-name"></span></div>
-        <div class="mb-2"><strong>Bio:</strong> <span id="pm-bio"></span></div>
-        <div class="mb-2"><strong>Qualifications:</strong> <span id="pm-qual"></span></div>
+        <div><strong>Name:</strong> <span id="pm-name"></span></div>
+        <div><strong>Bio:</strong> <span id="pm-bio"></span></div>
+        <div><strong>Qualifications:</strong> <span id="pm-qual"></span></div>
+
+        <hr>
+
+        <div><strong>Average rating:</strong> <span id="pm-rating">—</span></div>
+        <div>
+          <strong>Recent reviews:</strong>
+          <ul id="pm-reviews" class="mb-0 ps-3 small"></ul>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
 <script>
   document.addEventListener("show.bs.modal", function (event) {
-    const btn = event.relatedTarget
-    if (!btn || btn.id === "profileModal") return
-    const name = btn.getAttribute("data-user-name") || ""
-    const bio  = btn.getAttribute("data-user-bio") || ""
-    const qual = btn.getAttribute("data-user-qual") || ""
-    const modal = document.getElementById("profileModal")
-    modal.querySelector("#pm-name").textContent = name
-    modal.querySelector("#pm-bio").textContent  = bio || "—"
-    modal.querySelector("#pm-qual").textContent = qual || "—"
-  })
+    const btn = event.relatedTarget;
+    if (!btn || btn.id === "profileModal") return;
+
+    const modal = document.getElementById("profileModal");
+    modal.querySelector("#pm-name").textContent = btn.getAttribute("data-user-name") || "";
+    modal.querySelector("#pm-bio").textContent  = btn.getAttribute("data-user-bio") || "—";
+    modal.querySelector("#pm-qual").textContent = btn.getAttribute("data-user-qual") || "—";
+    modal.querySelector("#pm-rating").textContent = btn.getAttribute("data-user-rating") || "—";
+
+    const list = modal.querySelector("#pm-reviews");
+    list.innerHTML = "";
+    const reviewsRaw = btn.getAttribute("data-user-reviews") || "";
+    if (reviewsRaw.length > 0) {
+      reviewsRaw.split(" || ").forEach(function (line) {
+        const li = document.createElement("li");
+        li.textContent = line;
+        list.appendChild(li);
+      });
+    } else {
+      const li = document.createElement("li");
+      li.textContent = "No reviews yet.";
+      list.appendChild(li);
+    }
+  });
 </script>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_13_010625) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_01_231752) do
   create_table "matches", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "status", default: "mutual", null: false
@@ -39,11 +39,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_010625) do
   create_table "reviews", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
-    t.integer "rating"
-    t.integer "reviewee_id"
-    t.integer "reviewer_id"
+    t.integer "match_id"
+    t.integer "rating", null: false
+    t.integer "reviewee_id", null: false
+    t.integer "reviewer_id", null: false
     t.integer "skill_exchange_request_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["match_id", "reviewer_id"], name: "index_reviews_on_match_id_and_reviewer_id", unique: true
+    t.index ["match_id"], name: "index_reviews_on_match_id"
+    t.index ["reviewee_id"], name: "index_reviews_on_reviewee_id"
+    t.index ["reviewer_id"], name: "index_reviews_on_reviewer_id"
     t.index ["skill_exchange_request_id"], name: "index_reviews_on_skill_exchange_request_id"
   end
 
@@ -58,6 +63,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_010625) do
     t.string "modality", default: "in_person", null: false
     t.text "notes"
     t.integer "offer_hours", default: 1, null: false
+    t.integer "partner_id"
     t.integer "status", default: 0, null: false
     t.string "teach_category"
     t.integer "teach_level", default: 2, null: false
@@ -100,8 +106,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_010625) do
   add_foreign_key "matches", "users", column: "user2_id"
   add_foreign_key "messages", "users", column: "recipient_id"
   add_foreign_key "messages", "users", column: "sender_id"
+  add_foreign_key "reviews", "matches"
   add_foreign_key "reviews", "skill_exchange_requests"
+  add_foreign_key "reviews", "users", column: "reviewee_id"
+  add_foreign_key "reviews", "users", column: "reviewer_id"
   add_foreign_key "skill_exchange_requests", "users"
+  add_foreign_key "skill_exchange_requests", "users", column: "partner_id"
   add_foreign_key "user_skill_requests", "users", column: "receiver_id"
   add_foreign_key "user_skill_requests", "users", column: "requester_id"
 end

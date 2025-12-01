@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  get "reviews/new", to: "reviews#new", as: :new_review
-  post "reviews", to: "reviews#create", as: :review_create
+  resources :reviews, only: [:new, :create]
+
   # Root route
   root 'home#index'
 

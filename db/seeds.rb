@@ -9,14 +9,20 @@
 #   end
 
 # Create test user
-u = User.first || User.create!(name: "Test User", email: "test@school.edu")
+u = User.first || User.create!(
+  name: "Test User",
+  email: "test@school.edu",
+  password: "password"
+)
 
-# Create sample skill exchange requests
+# Piano → Python
 SkillExchangeRequest.find_or_create_by!(
   user: u,
   teach_skill: "Piano",
   learn_skill: "Python"
 ) do |r|
+  r.teach_category = "music_art"
+  r.learn_category = "tech_academics"
   r.teach_level = :intermediate
   r.learn_level = :beginner
   r.offer_hours = 2
@@ -27,11 +33,14 @@ SkillExchangeRequest.find_or_create_by!(
   r.learning_goal = "Learn the basics"
 end
 
+# Java → Spanish
 SkillExchangeRequest.find_or_create_by!(
   user: u,
   teach_skill: "Java",
   learn_skill: "Spanish"
 ) do |r|
+  r.teach_category = "tech_academics"
+  r.learn_category = "language"
   r.teach_level = :advanced
   r.learn_level = :beginner
   r.offer_hours = 3
