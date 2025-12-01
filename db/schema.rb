@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_12_223325) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_13_010625) do
+>>>>>>> 4f374e0 (Review feature: submit and display reviews)
   create_table "matches", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "status", default: "mutual", null: false
@@ -34,6 +35,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_12_223325) do
     t.index ["recipient_id"], name: "index_messages_on_recipient_id"
     t.index ["sender_id", "recipient_id", "created_at"], name: "index_messages_on_sender_id_and_recipient_id_and_created_at"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
+
+  create_table "reviews", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.integer "rating"
+    t.integer "reviewee_id"
+    t.integer "reviewer_id"
+    t.integer "skill_exchange_request_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["skill_exchange_request_id"], name: "index_reviews_on_skill_exchange_request_id"
   end
 
   create_table "skill_exchange_requests", force: :cascade do |t|
@@ -70,6 +81,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_12_223325) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.float "avg_rating"
     t.text "bio"
     t.datetime "created_at", null: false
     t.boolean "edu_verified"
@@ -88,6 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_12_223325) do
   add_foreign_key "matches", "users", column: "user2_id"
   add_foreign_key "messages", "users", column: "recipient_id"
   add_foreign_key "messages", "users", column: "sender_id"
+  add_foreign_key "reviews", "skill_exchange_requests"
   add_foreign_key "skill_exchange_requests", "users"
   add_foreign_key "user_skill_requests", "users", column: "receiver_id"
   add_foreign_key "user_skill_requests", "users", column: "requester_id"
