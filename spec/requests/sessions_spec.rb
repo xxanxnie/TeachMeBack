@@ -34,8 +34,4 @@ RSpec.describe "Sessions", type: :request do
 
       expect(response).to redirect_to("/")
       follow_redirect!
-      expect(session[:user_id]).to be_nil
-    end
-  end
-end
-
+      expect(session[:user_id]).to 
