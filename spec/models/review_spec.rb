@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe Review, type: :model do
   describe "validations" do
     it "is valid with rating, content, reviewer, and reviewee" do
-      reviewer = User.create!(email: "a@uni.edu", password: "pass123", name: "Alice")
-      reviewee = User.create!(email: "b@uni.edu", password: "pass123", name: "Bob")
+      reviewer = User.create!(email: "a@uni.edu", password: "secretpass", name: "Alice")
+      reviewee = User.create!(email: "b@uni.edu", password: "secretpass", name: "Bob")
       request = SkillExchangeRequest.create!(
   user: reviewee,
   teach_skill: "Ruby",

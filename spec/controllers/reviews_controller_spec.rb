@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe ReviewsController, type: :controller do
-  let(:reviewer) { User.create!(email: "a@uni.edu", password: "pass123", name: "Alice") }
-  let(:reviewee) { User.create!(email: "b@uni.edu", password: "pass123", name: "Bob") }
+  let(:reviewer) { User.create!(email: "a@uni.edu", password: "secretpass", name: "Alice") }
+  let(:reviewee) { User.create!(email: "b@uni.edu", password: "secretpass", name: "Bob") }
   let(:request) do
     SkillExchangeRequest.create!(
       user: reviewee,

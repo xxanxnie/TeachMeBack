@@ -24,8 +24,8 @@ end
 
 describe "review associations (functional)" do
   it "returns reviews where user is the reviewee" do
-    bob = User.create!(email: "bob@school.edu", password: "pass123", name: "Bob")
-    alice = User.create!(email: "alice@school.edu", password: "pass123", name: "Alice")
+    bob = User.create!(email: "bob@school.edu", password: "secretpass", name: "Bob")
+    alice = User.create!(email: "alice@school.edu", password: "secretpass", name: "Alice")
 
     request = SkillExchangeRequest.create!(
       user: bob,
@@ -50,9 +50,9 @@ end
 
 describe "#avg_rating" do
   it "returns the correct average from received reviews" do
-    user = User.create!(email: "bob@school.edu", password: "pass123", name: "Bob")
-    reviewer1 = User.create!(email: "a@school.edu", password: "pass123", name: "Alice")
-    reviewer2 = User.create!(email: "c@school.edu", password: "pass123", name: "Charlie")
+    user = User.create!(email: "bob@school.edu", password: "secretpass", name: "Bob")
+    reviewer1 = User.create!(email: "a@school.edu", password: "secretpass", name: "Alice")
+    reviewer2 = User.create!(email: "c@school.edu", password: "secretpass", name: "Charlie")
 
     request = SkillExchangeRequest.create!(
       user: user,
