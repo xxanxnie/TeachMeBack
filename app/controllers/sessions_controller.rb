@@ -9,7 +9,11 @@ class SessionsController < ApplicationController
       redirect_to explore_path, notice: "Logged in successfully!"
     else
       flash.now[:alert] = "Invalid email or password"
-      render :new, status: :unprocessable_entity
+      if params[:auth_source] == "home"
+        render "home/index", status: :unprocessable_entity
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
   end
 

@@ -11,7 +11,6 @@ class UsersController < ApplicationController
       flash[:notice] = "Welcome, #{@user.name}\nYour email has been verified as .edu"
       redirect_to login_path, notice: "Account created successfully. Please log in."
     else
-      flash.now[:alert] = @user.errors.full_messages.to_sentence
       render :new, status: :unprocessable_entity
     end
   end
