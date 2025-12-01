@@ -106,15 +106,10 @@
       <% if current_user && current_user.id != skill_request.user_id %>
         <% 
           other_user = skill_request.user
-          already_matched = current_user.matched_with?(other_user)
           already_requested = current_user.has_sent_request_for?(other_user, skill_request)
         %>
         <div class="mt-3 pt-2 border-top">
-          <% if already_matched %>
-            <button class="btn btn-success w-100" disabled>
-              ✓ Matched!
-            </button>
-          <% elsif already_requested %>
+          <% if already_requested %>
             <button class="btn btn-secondary w-100" disabled>
               Request Sent
             </button>
