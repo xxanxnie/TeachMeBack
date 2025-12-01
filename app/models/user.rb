@@ -43,8 +43,12 @@ class User < ApplicationRecord
     Match.exists?(user1_id: user_ids[0], user2_id: user_ids[1])
   end
 
-  def has_sent_request_to?(other_user)
-    sent_skill_requests.exists?(receiver_id: other_user.id)
+  def has_sent_request_for?(other_user, skill_or_request)
+    if skill_or_request.respond_to?(:id) && skill_or_request.respond_to?(:teach_skill)
+      sent_skill_requests.exists?(receiver_id: other_user.id, skill_exchange_request_id: skill_or_request.id)
+    else
+      sent_skill_requests.exists?(receiver_id: other_user.id, skill: skill_or_request.to_s)
+    end
   end
 
   def has_received_request_from?(other_user)
