@@ -3,20 +3,20 @@ require 'shoulda/matchers'
 
 RSpec.describe User, type: :model do
   it "is valid with name, .edu email, and password" do
-    u = User.new(name: "Kiel", email: "k@school.edu", password: "secret")
+    u = User.new(name: "Kiel", email: "k@school.edu", password: "secretpass")
     expect(u).to be_valid
     expect(u.edu_verified).to eq(true)
   end
 
   it "rejects non-.edu email and sets edu_verified false" do
-    u = User.new(name: "Kiel", email: "k@gmail.com", password: "secret")
+    u = User.new(name: "Kiel", email: "k@gmail.com", password: "secretpass")
     expect(u).not_to be_valid
     expect(u.errors[:email]).to include(".edu email required")
     expect(u.edu_verified).to eq(false)
   end
 
   it "requires a name" do
-    u = User.new(email: "k@school.edu", password: "secret")
+    u = User.new(email: "k@school.edu", password: "secretpass")
     expect(u).not_to be_valid
     expect(u.errors[:name]).to be_present
   end
@@ -24,8 +24,8 @@ end
 
 describe "review associations (functional)" do
   it "returns reviews where user is the reviewee" do
-    bob = User.create!(email: "bob@school.edu", password: "pass123", name: "Bob")
-    alice = User.create!(email: "alice@school.edu", password: "pass123", name: "Alice")
+    bob = User.create!(email: "bob@school.edu", password: "secretpass", name: "Bob")
+    alice = User.create!(email: "alice@school.edu", password: "secretpass", name: "Alice")
 
     request = SkillExchangeRequest.create!(
       user: bob,
@@ -50,9 +50,9 @@ end
 
 describe "#avg_rating" do
   it "returns the correct average from received reviews" do
-    user = User.create!(email: "bob@school.edu", password: "pass123", name: "Bob")
-    reviewer1 = User.create!(email: "a@school.edu", password: "pass123", name: "Alice")
-    reviewer2 = User.create!(email: "c@school.edu", password: "pass123", name: "Charlie")
+    user = User.create!(email: "bob@school.edu", password: "secretpass", name: "Bob")
+    reviewer1 = User.create!(email: "a@school.edu", password: "secretpass", name: "Alice")
+    reviewer2 = User.create!(email: "c@school.edu", password: "secretpass", name: "Charlie")
 
     request = SkillExchangeRequest.create!(
       user: user,

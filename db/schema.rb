@@ -79,11 +79,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_231752) do
     t.integer "receiver_id", null: false
     t.integer "requester_id", null: false
     t.string "skill", null: false
+    t.integer "skill_exchange_request_id"
     t.datetime "updated_at", null: false
     t.index ["receiver_id", "requester_id"], name: "index_user_skill_requests_on_receiver_id_and_requester_id"
     t.index ["receiver_id"], name: "index_user_skill_requests_on_receiver_id"
+    t.index ["requester_id", "receiver_id", "skill_exchange_request_id"], name: "idx_usr_requests_on_requester_receiver_ser", unique: true
     t.index ["requester_id", "receiver_id"], name: "index_user_skill_requests_on_requester_id_and_receiver_id"
     t.index ["requester_id"], name: "index_user_skill_requests_on_requester_id"
+    t.index ["skill_exchange_request_id"], name: "index_user_skill_requests_on_skill_exchange_request_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -100,6 +103,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_231752) do
     t.string "password_digest"
     t.string "university"
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "matches", "users", column: "user1_id"
@@ -112,6 +116,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_01_231752) do
   add_foreign_key "reviews", "users", column: "reviewer_id"
   add_foreign_key "skill_exchange_requests", "users"
   add_foreign_key "skill_exchange_requests", "users", column: "partner_id"
+  add_foreign_key "user_skill_requests", "skill_exchange_requests"
   add_foreign_key "user_skill_requests", "users", column: "receiver_id"
   add_foreign_key "user_skill_requests", "users", column: "requester_id"
 end

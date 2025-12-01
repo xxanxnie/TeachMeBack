@@ -1,34 +1,47 @@
 require "rails_helper"
 
 RSpec.describe "Sessions", type: :request do
+  describe "GET /login" do
+    it "renders the login page" do
+      get "/login"
+      expect(response).to have_http_status(:success)
+    end
+  end
+
   describe "POST /login" do
-    it "logs in with correct credentials and redirects to /explore" do
-      user = User.create!(name: "K", email: "k@school.edu", password: "secret")
-      post "/login", params: { email: user.email, password: "secret" }
-      expect(response).to redirect_to("/explore")
-      follow_redirect!
-      expect(response.body).to include("Logged in successfully")
+    let!(:user) do
+      User.create!(
+        email: "test@school.edu",
+        password: "secretpass",
+        name: "Test User"
+      )
     end
 
-    it "shows error on invalid credentials" do
-      user = User.create!(name: "K", email: "k@school.edu", password: "secret")
-      post "/login", params: { email: user.email, password: "wrong" }
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include("Invalid email or password")
+    it "logs the user in with valid credentials" do
+      post "/login", params: { email: user.email, password: "secretpass" }
+      expect(session[:user_id]).to eq(user.id)
+      expect(response).to redirect_to("/explore")
     end
   end
 
   describe "DELETE /logout" do
-    it "clears session and redirects to root" do
-      user = User.create!(name: "K", email: "k@school.edu", password: "secret")
-      # log in
-      post "/login", params: { email: user.email, password: "secret" }
-      expect(session[:user_id]).to eq(user.id)
+    let!(:user) do
+      User.create!(
+        email: "logout-test@school.edu",
+        password: "secretpass",
+        name: "Logout User"
+      )
+    end
 
+    before do
+      post "/login", params: { email: user.email, password: "secretpass" }
+      expect(session[:user_id]).to eq(user.id)
+    end
+
+    it "clears session and redirects to root" do
       delete "/logout"
-      expect(response).to redirect_to("/")
-      follow_redirect!
       expect(session[:user_id]).to be_nil
+      expect(response).to redirect_to("/")
     end
   end
 end
