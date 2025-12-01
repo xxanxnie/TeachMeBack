@@ -99,6 +99,17 @@ When(/^I click "([^"]+)" on the request card for "([^"]+)"$/) do |link_text, own
   within(card) { click_link link_text }
 end
 
+When("I click {string} on the match card for {string}") do |button_text, other_name|
+  # Match cards are rendered in match/index inside .card-body elements
+  cards = page.all(".card .card-body", minimum: 1)
+  card = cards.find { |node| node.text.include?(other_name) } ||
+         (raise "Could not find match card for #{other_name}")
+
+  within(card) do
+    click_link(button_text)
+  end
+end
+
 Then(/^I should be on the message thread with "([^"]+)"$/) do |partner_name|
   expect(page).to have_current_path(%r{/messages/thread})
   expect(page).to have_content("Conversation with #{partner_name}")
