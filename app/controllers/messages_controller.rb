@@ -27,7 +27,7 @@ class MessagesController < ApplicationController
     @message = Message.new(message_params.merge(sender_id: current_user.id))
 
     if @message.save
-      redirect_to message_thread_path(with: @message.recipient_id), notice: "Sent."
+      redirect_to message_thread_path(with: @message.recipient_id)
     else
       @partner  = User.find(message_params[:recipient_id])
       @messages = Message.between(current_user.id, @partner.id).order(:created_at)
@@ -46,4 +46,3 @@ class MessagesController < ApplicationController
     redirect_to login_path, alert: "Please sign in to continue" unless current_user
   end
 end
-

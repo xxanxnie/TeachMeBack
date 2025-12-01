@@ -32,9 +32,35 @@
                           <p class="text-muted small mb-0"><%= other_user.email %></p>
                         </div>
                       </div>
-                      
+                      <% details = @match_details[match.id] || {} %>
                       <% if other_user.bio.present? %>
                         <p class="text-muted small mb-3"><%= other_user.bio.truncate(100) %></p>
+                      <% end %>
+
+                      <% if details[:mine] || details[:theirs] %>
+                        <div class="alert alert-info small py-2">
+                          <% if details[:mine] %>
+                            <% req = details[:mine]; ser = req.skill_exchange_request %>
+                            <div class="fw-semibold mb-1">You requested from them:</div>
+                            <% if ser %>
+                              <div>They’re offering to teach: <strong><%= ser.teach_skill %></strong></div>
+                              <div>They want to learn: <%= ser.learn_skill %></div>
+                            <% else %>
+                              <div>Skill: <strong><%= req.skill %></strong></div>
+                            <% end %>
+                          <% end %>
+                          <% if details[:theirs] %>
+                            <% req = details[:theirs]; ser = req.skill_exchange_request %>
+                            <hr class="my-2">
+                            <div class="fw-semibold mb-1">They requested from you:</div>
+                            <% if ser %>
+                              <div>You’re offering to teach: <strong><%= ser.teach_skill %></strong></div>
+                              <div>You want to learn: <%= ser.learn_skill %></div>
+                            <% else %>
+                              <div>Skill: <strong><%= req.skill %></strong></div>
+                            <% end %>
+                          <% end %>
+                        </div>
                       <% end %>
 
                       <div class="d-flex gap-2">

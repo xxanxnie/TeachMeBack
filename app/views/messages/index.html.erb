@@ -1,13 +1,52 @@
-<h1>Your Messages</h1>
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="mb-1">Messages</h1>
+        <p class="text-muted small mb-0">Keep the conversation going with your matches</p>
+      </div>
+      <%= link_to "Explore", explore_path, class: "btn btn-outline-primary" %>
+    </div>
+  </div>
 
-<% if @partners.any? %>
-  <ul>
-    <% @partners.each do |u| %>
-      <li>
-        <%= link_to (u.full_name.presence || u.email), message_thread_path(with: u.id) %>
-      </li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>No conversations yet.</p>
-<% end %>
+  <div class="card shadow-sm">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        Conversations
+        <span class="badge bg-primary ms-2"><%= @partners.size %></span>
+      </h5>
+    </div>
+    <div class="card-body">
+      <% if @partners.any? %>
+        <div class="list-group">
+          <% @partners.each do |u| %>
+            <%= link_to message_thread_path(with: u.id),
+                        class: "list-group-item list-group-item-action d-flex align-items-center gap-3" do %>
+              <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                   style="width: 48px; height: 48px; font-weight: 700;">
+                <%= (u.full_name.to_s.split.map { |n| n[0] }.join.first(2).presence || "TM").upcase %>
+              </div>
+              <div class="flex-grow-1">
+                <div class="fw-semibold mb-0"><%= u.full_name.presence || u.email %></div>
+                <div class="text-muted small">Tap to open the thread</div>
+              </div>
+              <span class="text-primary fw-semibold">View</span>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-5">
+          <div class="mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-chat text-muted" viewBox="0 0 16 16">
+              <path d="M2 2a2 2 0 0 0-2 2v7.793l2.146-2.147A.5.5 0 0 1 2.5 9.5H14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"/>
+              <path d="M15 8.5a1 1 0 0 1-1 1H2.914l-1.5 1.5A.5.5 0 0 1 1 10.5V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v4.5z"/>
+            </svg>
+          </div>
+          <h5 class="text-muted">No conversations yet</h5>
+          <p class="text-muted">Find a match and start chatting.</p>
+          <%= link_to "Explore", explore_path, class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
