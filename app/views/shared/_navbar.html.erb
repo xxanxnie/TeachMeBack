@@ -15,14 +15,13 @@
     <!-- All nav links on the right -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <%= link_to "Explore", explore_path, class: "nav-link #{'active' if current_page?(explore_path)}" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Match", match_path, class: "nav-link #{'active' if current_page?(match_path)}" %>
-        </li>
-
         <% if user_signed_in? %>
+          <li class="nav-item">
+            <%= link_to "Explore", explore_path, class: "nav-link #{'active' if current_page?(explore_path)}" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Match", match_path, class: "nav-link #{'active' if current_page?(match_path)}" %>
+          </li>
           <li class="nav-item">
             <%= link_to messages_path, class: "nav-link d-flex align-items-center" do %>
               Messages

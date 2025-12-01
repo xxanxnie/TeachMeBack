@@ -21,30 +21,25 @@
   <body class="bg-light">
     <%= render 'shared/navbar' %>
 
-    <% flash.each do |type, message| %>
-      <% alert_class = case type.to_sym
-          when :notice then "alert-success"
-          when :alert  then "alert-danger"
-          else "alert-info"
-        end %>
+    <% unless controller_name == "sessions" %>
+      <% flash.each do |type, message| %>
+        <% alert_class = case type.to_sym
+            when :notice then "alert-success"
+            when :alert  then "alert-danger"
+            else "alert-info"
+          end %>
 
-      <div class="alert <%= alert_class %> alert-dismissible fade show text-center shadow-sm"
-           role="alert"
-           style="max-width: 600px; margin: 20px auto;">
-        <%= message %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+        <div class="alert <%= alert_class %> alert-dismissible fade show text-center shadow-sm"
+             role="alert"
+             style="max-width: 600px; margin: 20px auto;">
+          <%= message %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
     <% end %>
 
     <% if flash[:error] %>
       <%= render 'shared/error_banner', message: flash[:error] %>
-    <% end %>
-
-    <% if flash[:notice].present? %>
-      <div class="alert alert-success" role="alert"><%= flash[:notice] %></div>
-    <% end %>
-    <% if flash[:alert].present? %>
-      <div class="alert alert-warning" role="alert"><%= flash[:alert] %></div>
     <% end %>
 
     <main class="container mt-4">

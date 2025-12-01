@@ -115,6 +115,17 @@ Then("a match should exist between {string} and {string}") do |user1_name, user2
   expect(match.status).to eq("mutual")
 end
 
+Then("a match should not exist between {string} and {string}") do |user1_name, user2_name|
+  user1 = find_user_by_name!(user1_name)
+  user2 = find_user_by_name!(user2_name)
+
+  user_ids = [user1.id, user2.id].sort
+
+  match = Match.find_by(user1_id: user_ids[0], user2_id: user_ids[1])
+  expect(match).to be_nil,
+    "Expected no match between #{user1_name} and #{user2_name}, but one exists"
+end
+
 Then("I should see {string} button on the skill request card for {string}") do |button_text, owner_name|
   card = find_card_for_owner!(owner_name)
 
