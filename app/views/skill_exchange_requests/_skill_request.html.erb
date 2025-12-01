@@ -122,6 +122,7 @@
             <%= form_with url: user_skill_requests_path, method: :post, local: true, class: "d-inline w-100" do |f| %>
               <%= hidden_field_tag :receiver_id, skill_request.user_id %>
               <%= hidden_field_tag :skill, skill_request.teach_skill %>
+              <%= hidden_field_tag :skill_exchange_request_id, skill_request.id %>
               <%= f.submit "TeachMeBack Request", class: "btn btn-primary w-100" %>
             <% end %>
           <% end %>
