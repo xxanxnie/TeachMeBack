@@ -21,9 +21,11 @@ class User < ApplicationRecord
   has_secure_password
 
   validates :name, presence: true
-  validates :email, presence: true
+  validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :password, length: { minimum: 8 }, allow_nil: true
   validate  :edu_email_only
 
+  before_validation :normalize_email
   before_validation :set_edu_verified
   before_validation :set_display_name
 
@@ -65,6 +67,10 @@ class User < ApplicationRecord
   end
 
   private
+
+  def normalize_email
+    self.email = email.to_s.strip.downcase
+  end
 
   def set_display_name
     if name.to_s.strip.blank?
