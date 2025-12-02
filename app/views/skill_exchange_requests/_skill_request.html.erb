@@ -20,7 +20,9 @@
             data-user-id="<%= skill_request.user_id %>"
             data-user-name="<%= skill_request.user.try(:full_name) || skill_request.user.name %>"
             data-user-bio="<%= skill_request.user.try(:bio) %>"
-            data-user-qual="<%= skill_request.user.try(:qualifications) %>">
+            data-user-qual="<%= skill_request.user.try(:qualifications) %>"
+            data-user-rating="<%= skill_request.user.try(:avg_rating)&.round(1) %>"
+            data-user-rating-count="<%= skill_request.user.try(:received_reviews)&.count %>">
             <%= skill_request.user.try(:full_name) || skill_request.user.name %>
             <% if skill_request.user == current_user %>
               <span class="badge bg-secondary ms-2">me</span>

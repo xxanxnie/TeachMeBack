@@ -1,19 +1,58 @@
-<h1>Leave a Review</h1>
+<div class="container py-4" style="max-width: 640px;">
+  <h1 class="mb-3">Leave a Review</h1>
+  <p class="text-muted">Select the partner you matched with and share feedback about your exchange.</p>
 
-<%= form_with model: @review, url: review_create_path, local: true do |f| %>
-  <%= hidden_field_tag :skill_exchange_request_id, @request.id %>
+  <%= form_with model: @review, url: review_create_path, local: true do |f| %>
+    <%= hidden_field_tag :skill_exchange_request_id, @request&.id %>
 
-  <div class="field">
-    <%= f.label :rating, "Rating (1 to 5)" %><br>
-    <%= f.number_field :rating, in: 1..5, step: 1, required: true %>
-  </div>
+    <div class="mb-3">
+      <label class="form-label">Who are you reviewing?</label>
+      <%= select_tag :reviewee_id,
+                     options_from_collection_for_select(@partners, :id, :full_name),
+                     include_blank: "Select a partner",
+                     class: "form-select",
+                     required: true %>
+    </div>
 
-  <div class="field">
-    <%= f.label :content, "Your Feedback" %><br>
-    <%= f.text_area :content, rows: 5, placeholder: "What was your experience like?", required: true %>
-  </div>
+    <div class="mb-3">
+      <label class="form-label d-block">Rating</label>
+      <div class="star-rating" data-behavior="star-rating">
+        <% 5.downto(1).each do |star| %>
+          <input type="radio" id="star-<%= star %>" name="review[rating]" value="<%= star %>" required>
+          <label for="star-<%= star %>" title="<%= star %> stars">★</label>
+        <% end %>
+      </div>
+    </div>
 
-  <div class="actions">
-    <%= f.submit "Submit Review" %>
-  </div>
-<% end %>
+    <div class="mb-3">
+      <%= f.label :content, "Your Feedback", class: "form-label" %>
+      <%= f.text_area :content, rows: 5, placeholder: "What worked? What could be better?", required: true, class: "form-control" %>
+    </div>
+
+    <div class="text-end">
+      <%= f.submit "Submit Review", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .star-rating {
+    direction: rtl;
+    display: inline-flex;
+    gap: 4px;
+    font-size: 2rem;
+  }
+  .star-rating input {
+    display: none;
+  }
+  .star-rating label {
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.2s;
+  }
+  .star-rating input:checked ~ label,
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    color: #f5c518;
+  }
+</style>

@@ -70,8 +70,13 @@ class SkillExchangeRequestsController < ApplicationController
       end
 
       if @skill_exchange_request.update(skill_exchange_request_update_params)
-        redirect_back(fallback_location: profile_path,
-                      notice: "Skill exchange request updated.")
+        if @skill_exchange_request.status_closed?
+          redirect_to new_review_path(skill_exchange_request_id: @skill_exchange_request.id),
+                      notice: "Request marked as completed. Leave a review for your match."
+        else
+          redirect_back(fallback_location: profile_path,
+                        notice: "Skill exchange request updated.")
+        end
       else
         redirect_back(fallback_location: profile_path,
                       alert: @skill_exchange_request.errors.full_messages.to_sentence)
@@ -91,7 +96,7 @@ class SkillExchangeRequestsController < ApplicationController
     private
   
     def set_skill_exchange_request
-      @skill_exchange_request = current_user.skill_exchange_requests.find(params[:id])
+      @skill_exchange_request = SkillExchangeRequest.find(params[:id])
     end
 
     def skill_exchange_request_update_params
