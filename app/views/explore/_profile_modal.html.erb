@@ -7,6 +7,7 @@
       </div>
       <div class="modal-body">
         <div class="mb-2"><strong>Name:</strong> <span id="pm-name"></span></div>
+        <div class="mb-2"><strong>Rating:</strong> <span id="pm-rating"></span></div>
         <div class="mb-2"><strong>Bio:</strong> <span id="pm-bio"></span></div>
         <div class="mb-2"><strong>Qualifications:</strong> <span id="pm-qual"></span></div>
       </div>
@@ -20,9 +21,19 @@
     const name = btn.getAttribute("data-user-name") || ""
     const bio  = btn.getAttribute("data-user-bio") || ""
     const qual = btn.getAttribute("data-user-qual") || ""
+    const rating = btn.getAttribute("data-user-rating")
+    const ratingCount = btn.getAttribute("data-user-rating-count")
     const modal = document.getElementById("profileModal")
     modal.querySelector("#pm-name").textContent = name
     modal.querySelector("#pm-bio").textContent  = bio || "—"
     modal.querySelector("#pm-qual").textContent = qual || "—"
+    const ratingEl = modal.querySelector("#pm-rating")
+    if (rating && ratingCount) {
+      const filledStars = "★".repeat(Math.round(parseFloat(rating)))
+      const emptyStars  = "☆".repeat(5 - Math.round(parseFloat(rating)))
+      ratingEl.textContent = `${filledStars}${emptyStars} (${parseFloat(rating).toFixed(1)}/5 • ${ratingCount} review${ratingCount === "1" ? "" : "s"})`
+    } else {
+      ratingEl.textContent = "No reviews yet"
+    }
   })
 </script>

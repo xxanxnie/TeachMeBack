@@ -1,15 +1,17 @@
 class ReviewsController < ApplicationController
   before_action :require_login
   def new
-    @request = SkillExchangeRequest.find(params[:skill_exchange_request_id])
+    @request = SkillExchangeRequest.find_by(id: params[:skill_exchange_request_id])
+    @partners = current_user.matches.map { |m| m.other_user(current_user) }.uniq
     @review = Review.new(skill_exchange_request: @request)
   end
 
   def create
-    @request = SkillExchangeRequest.find(params[:skill_exchange_request_id])
+    @request = SkillExchangeRequest.find_by(id: params[:skill_exchange_request_id])
+    reviewee = User.find(params[:reviewee_id])
     @review = Review.new(review_params)
     @review.reviewer = current_user
-    @review.reviewee = @request.user
+    @review.reviewee = reviewee
     @review.skill_exchange_request = @request
 
     if @review.save

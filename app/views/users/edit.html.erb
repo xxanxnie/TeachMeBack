@@ -155,11 +155,16 @@
             <% if completed.any? %>
               <ul class="list-group list-group-flush">
                 <% completed.each do |req| %>
+                  <% review = req.reviews.find_by(reviewer_id: @user.id) rescue nil %>
                   <li class="list-group-item px-0">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                       <div>
                         <strong><%= req.teach_skill %></strong> ↔ <strong><%= req.learn_skill %></strong>
-                        <span class="text-muted">with partner</span>
+                        <% if review&.reviewee %>
+                          <span class="text-muted">with <%= review.reviewee.full_name %></span>
+                        <% else %>
+                          <span class="text-muted">with partner</span>
+                        <% end %>
                         <%= link_to "View details", skill_exchange_request_path(req), class: "btn btn-link btn-sm ps-1" %>
                       </div>
                       <div class="text-muted small"><%= req.updated_at.strftime('%b %d, %Y') %></div>
@@ -180,7 +185,12 @@
             <% if @user.received_reviews.any? %>
               <% @user.received_reviews.each do |review| %>
                 <div class="mb-3">
-                  <div class="fw-semibold">⭐ <%= review.rating %> from <%= review.reviewer.full_name %></div>
+                  <% filled = "★" * review.rating.to_i %>
+                  <% empty  = "☆" * (5 - review.rating.to_i) %>
+                  <div class="fw-semibold d-flex align-items-center gap-2">
+                    <span class="text-warning"><%= filled %><%= empty %></span>
+                    <span><%= review.rating %>/5 from <%= review.reviewer.full_name %></span>
+                  </div>
                   <div class="text-muted"><%= review.content %></div>
                 </div>
               <% end %>

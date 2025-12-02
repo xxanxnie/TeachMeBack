@@ -1,6 +1,7 @@
 # app/models/skill_exchange_request.rb
 class SkillExchangeRequest < ApplicationRecord
     belongs_to :user
+    has_many :reviews, dependent: :destroy
 
     DAYS = %w[Mon Tue Wed Thu Fri Sat Sun].freeze
 
@@ -107,6 +108,8 @@ class SkillExchangeRequest < ApplicationRecord
     before_validation :normalize_availability_days_to_mask
 
     private
+
+    public :teach_category_label, :learn_category_label
 
     def normalize_availability_days_to_mask
       values = Array(availability_days)
