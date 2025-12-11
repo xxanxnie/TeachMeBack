@@ -11,25 +11,24 @@ Feature: Skill exchange matching, history, and messaging
     And the following skill exchange requests exist:
       | user_name    | teach_skill | learn_skill | modality   | expires_after_days |
       | Bob Johnson  | Guitar      | Spanish     | remote     | 30                 |
+      | Alice Smith  | Piano       | Python      | remote     | 30                 |
 
   Scenario: Express interest creates a user skill request but not an immediate match
     Given I am logged in as "alice-smith@columbia.edu"
     When I visit the explore page
-    And I click "Express interest" on the skill request card for "Bob Johnson"
-    Then I should see "Interest sent to Bob Johnson."
+    And I click "TeachMeBack Request" on the skill request card for "Bob Johnson"
+    Then I should see "Request sent to Bob Johnson."
     And a user skill request should exist from "Alice Smith" to "Bob Johnson" for skill "Guitar"
     And a match should not exist between "Alice Smith" and "Bob Johnson"
 
   Scenario: Mutual interest via Express interest leads directly to chat
     Given I am logged in as "bob-johnson@columbia.edu"
     And a user skill request exists from "Alice Smith" to "Bob Johnson" for skill "Guitar"
-    When I log out
-    And I am logged in as "alice-smith@columbia.edu"
-    And I visit the explore page
-    And I click "Express interest" on the skill request card for "Bob Johnson"
+    When I visit the explore page
+    And I click "TeachMeBack Request" on the skill request card for "Alice Smith"
     Then a match should exist between "Alice Smith" and "Bob Johnson"
-    And I should be on the message thread with "Bob Johnson"
-    And I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other. Start chatting!"
+    And I should be on the message thread with "Alice Smith"
+    And I should see "Congrats, it's a match! You and Alice Smith expressed interest in each other. Start chatting!"
 
   Scenario: TeachMeBack mutual match flows into chat
     Given I am logged in as "alice-smith@columbia.edu"
@@ -44,7 +43,7 @@ Feature: Skill exchange matching, history, and messaging
     Given a match exists between "Alice Smith" and "Bob Johnson"
     And I am logged in as "alice-smith@columbia.edu"
     When I visit the match page
-    And I click "💬 Open chat" on the match card for "Bob Johnson"
+    And I click "💬 Message" on the match card for "Bob Johnson"
     Then I should be on the message thread with "Bob Johnson"
 
   Scenario: Completed exchanges appear in profile history
@@ -54,7 +53,5 @@ Feature: Skill exchange matching, history, and messaging
     Then I should see "Active Skill Exchange Requests"
     And I should see "Guitar" in my active skill exchange list
     When I click "Mark as completed" on my "Guitar" active request
-    Then I should see "Skill exchange request updated."
-    And I should see "Guitar" in my history skill exchange list
-
-
+    Then I should see "Request marked as completed. Leave a review for your match."
+    And I should see "Leave a Review"

@@ -11,7 +11,7 @@ Feature: Explore dashboard
 
   Scenario: Guests see Explore in the nav
     When I visit the home page as a guest
-    Then I should see a link to the explore page
+    Then I should not see a link to the explore page
 
   Scenario: Guests are redirected if they visit /explore directly
     When I visit the explore page as a guest

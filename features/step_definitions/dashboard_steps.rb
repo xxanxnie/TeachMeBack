@@ -4,6 +4,25 @@ def email_for(full_name)
   "#{slug}@columbia.edu"
 end
 
+DB_RETRY_ERRORS = [
+  ActiveRecord::StatementTimeout
+].tap do |errors|
+  errors << ActiveRecord::LockWaitTimeout if defined?(ActiveRecord::LockWaitTimeout)
+  errors << SQLite3::BusyException if defined?(SQLite3::BusyException)
+end
+
+def with_db_retry(attempts = 3)
+  tries = 0
+  begin
+    yield
+  rescue *DB_RETRY_ERRORS => e
+    tries += 1
+    raise e if tries >= attempts
+    sleep(0.1 * tries)
+    retry
+  end
+end
+
 def ensure_user(identifier)
   email = identifier.to_s.include?("@") ? identifier : email_for(identifier)
   display_name =
@@ -17,12 +36,14 @@ def ensure_user(identifier)
   first = parts.first || display_name
   last  = parts.drop(1).join(" ").presence || "User"
 
-  User.find_or_create_by!(email: email) do |u|
-    u.password = "password" if u.respond_to?(:password=)
-    u.first_name = first if u.respond_to?(:first_name=)
-    u.last_name  = last if u.respond_to?(:last_name=)
-    u.name       = display_name if u.respond_to?(:name=)
-    u.full_name  = display_name if u.respond_to?(:full_name=)
+  with_db_retry do
+    User.find_or_create_by!(email: email) do |u|
+      u.password = "password" if u.respond_to?(:password=)
+      u.first_name = first if u.respond_to?(:first_name=)
+      u.last_name  = last if u.respond_to?(:last_name=)
+      u.name       = display_name if u.respond_to?(:name=)
+      u.full_name  = display_name if u.respond_to?(:full_name=)
+    end
   end
 end
 
@@ -69,7 +90,7 @@ def create_skill_exchange_request(attrs = {})
     created_at: Time.current
   }
 
-  SkillExchangeRequest.create!(defaults.merge(attrs))
+  with_db_retry { SkillExchangeRequest.create!(defaults.merge(attrs)) }
 end
 
 def find_user!(full_name)
@@ -77,7 +98,27 @@ def find_user!(full_name)
 end
 
 Given("the following users exist:") do |table|
-  table.hashes.each { |row| ensure_user(row["full_name"]) }
+  table.hashes.each do |row|
+    identifier = row["email"].presence || row["user_email"].presence || row["full_name"].presence || row["name"]
+    user = ensure_user(identifier)
+
+    if row["email"].present? && user.email != row["email"]
+      user.update!(email: row["email"])
+    end
+
+    if row["full_name"].present?
+      parts = row["full_name"].split
+      user.first_name = parts.first if user.respond_to?(:first_name=)
+      user.last_name  = parts.drop(1).join(" ") if user.respond_to?(:last_name=)
+      user.name       = row["full_name"] if user.respond_to?(:name=)
+      user.full_name  = row["full_name"] if user.respond_to?(:full_name=)
+      user.save! if user.changed?
+    end
+
+    if row["password"].present? && user.respond_to?(:password=)
+      user.update!(password: row["password"])
+    end
+  end
 end
 
 Given("the following skill exchange requests exist:") do |table|
@@ -171,6 +212,7 @@ Then('I should not see {string}') do |text|
 end
 
 Given('I am logged in as {string}') do |email|
+  @current_user_email = email
   user = User.find_or_create_by!(email: email) do |u|
     u.password = "password" if u.respond_to?(:password=)
     if u.respond_to?(:name=)
