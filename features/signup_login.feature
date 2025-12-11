@@ -13,7 +13,8 @@ Feature: User signup, login, and .edu verification
     And I fill in "Email" with "km3851@columbia.edu"
     And I fill in "Password" with "secretpass"
     And I press "Create Account"
-    Then I should see "Account created successfully"
+    Then I should be on the login page
+    And I should see "Log in"
 
   Scenario: Signup fails for non .edu email
     When I follow "Sign up"
@@ -23,6 +24,15 @@ Feature: User signup, login, and .edu verification
     And I fill in "Password" with "secretpass"
     And I press "Create Account"
     Then I should see ".edu email required"
+
+  Scenario: Signup fails for blank email
+    When I follow "Sign up"
+    And I fill in "First name" with "Casey"
+    And I fill in "Last name" with "Creator"
+    And I fill in "Email" with ""
+    And I fill in "Password" with "secretpass"
+    And I press "Create Account"
+    Then I should see "Email can't be blank"
 
   Scenario: Login and logout
     Given a user exists with email "km3851@columbia.edu" and password "secretpass"
@@ -34,4 +44,3 @@ Feature: User signup, login, and .edu verification
     And I should be on the dashboard page
     When I press "Logout"
     Then I should be on the login page
-

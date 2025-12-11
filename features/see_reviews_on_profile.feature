@@ -6,15 +6,15 @@ Feature: See received reviews on profile
 
   Background:
     Given the following users exist:
-      | name  | email           | password |
-      | Alice | alice@school.edu | secret   |
-      | Bob   | bob@school.edu   | secret   |
-    And Bob is logged in
-    And Bob has received a review from Alice:
+      | full_name | email            |
+      | Alice Doe | alice@school.edu |
+      | Bob Doe   | bob@school.edu   |
+    And I am logged in as "bob@school.edu"
+    And Bob Doe has received a review from Alice Doe:
       | rating | content        |
       | 5      | Very helpful!  |
 
   Scenario: Bob sees his review and average rating
-    When Bob visits their profile
-    Then they should see "Average Rating: 5.0"
+    When Bob Doe visits their profile
+    Then they should see "Rating: 5.0"
     And they should see "Very helpful!"

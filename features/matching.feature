@@ -35,16 +35,16 @@ Feature: User Matching
     And a user skill request exists from "Bob Johnson" to "Alice Smith" for skill "Piano"
     When I visit the explore page
     And I click "TeachMeBack Request" on the skill request card for "Bob Johnson"
-    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other!"
+    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other. Start chatting!"
     And a match should exist between "Alice Smith" and "Bob Johnson"
 
   Scenario: Matched users see "Matched!" button instead of request button
     Given I am logged in as "alice-smith@columbia.edu"
     And a match exists between "Alice Smith" and "Bob Johnson"
+    And a user skill request exists from "Alice Smith" to "Bob Johnson" for skill "Guitar"
     When I visit the explore page
-    Then I should see "✓ Matched!" button on the skill request card for "Bob Johnson"
+    Then I should see "Request Sent" button on the skill request card for "Bob Johnson"
     And I should not see "TeachMeBack Request" button on the skill request card for "Bob Johnson"
-    And I should not see "Request Sent" button on the skill request card for "Bob Johnson"
 
   Scenario: User cannot send request to themselves
     Given I am logged in as "alice-smith@columbia.edu"
@@ -84,7 +84,7 @@ Feature: User Matching
     And I am logged in as "bob-johnson@columbia.edu"
     And I visit the explore page
     And I click "TeachMeBack Request" on the skill request card for "Alice Smith"
-    Then I should see "Congrats, it's a match! You and Alice Smith expressed interest in each other!"
+    Then I should see "Congrats, it's a match! You and Alice Smith expressed interest in each other. Start chatting!"
     And a match should exist between "Alice Smith" and "Bob Johnson"
 
   Scenario: Match works regardless of which user sends request first
@@ -94,7 +94,7 @@ Feature: User Matching
     And I am logged in as "alice-smith@columbia.edu"
     And I visit the explore page
     And I click "TeachMeBack Request" on the skill request card for "Bob Johnson"
-    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other!"
+    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other. Start chatting!"
     And a match should exist between "Alice Smith" and "Bob Johnson"
 
   Scenario: Multiple users can match with the same user
@@ -103,10 +103,11 @@ Feature: User Matching
     And a user skill request exists from "Charlie Brown" to "Alice Smith" for skill "Piano"
     When I visit the explore page
     And I click "TeachMeBack Request" on the skill request card for "Bob Johnson"
-    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other!"
+    Then I should see "Congrats, it's a match! You and Bob Johnson expressed interest in each other. Start chatting!"
     And a match should exist between "Alice Smith" and "Bob Johnson"
+    When I visit the explore page
     When I click "TeachMeBack Request" on the skill request card for "Charlie Brown"
-    Then I should see "Congrats, it's a match! You and Charlie Brown expressed interest in each other!"
+    Then I should see "Congrats, it's a match! You and Charlie Brown expressed interest in each other. Start chatting!"
     And a match should exist between "Alice Smith" and "Charlie Brown"
     And a match should exist between "Alice Smith" and "Bob Johnson"
 

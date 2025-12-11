@@ -1,6 +1,7 @@
 # features/step_definitions/skill_exchange_request_steps.rb
 
 Given("I am logged in as a user with email {string} and password {string}") do |email, password|
+  @current_user_email = email
   user = User.find_by(email: email)
   unless user
     user = User.create!(
@@ -26,13 +27,13 @@ end
 When("I check availability day {string}") do |day|
   # Map day name to checkbox id
   day_map = {
-    "Sun" => "day_0",
-    "Mon" => "day_1",
-    "Tue" => "day_2",
-    "Wed" => "day_3",
-    "Thu" => "day_4",
-    "Fri" => "day_5",
-    "Sat" => "day_6"
+    "Mon" => "day_0",
+    "Tue" => "day_1",
+    "Wed" => "day_2",
+    "Thu" => "day_3",
+    "Fri" => "day_4",
+    "Sat" => "day_5",
+    "Sun" => "day_6"
   }
   
   checkbox_id = day_map[day]
@@ -45,13 +46,13 @@ end
 
 When("I uncheck availability day {string}") do |day|
   day_map = {
-    "Sun" => "day_0",
-    "Mon" => "day_1",
-    "Tue" => "day_2",
-    "Wed" => "day_3",
-    "Thu" => "day_4",
-    "Fri" => "day_5",
-    "Sat" => "day_6"
+    "Mon" => "day_0",
+    "Tue" => "day_1",
+    "Wed" => "day_2",
+    "Thu" => "day_3",
+    "Fri" => "day_4",
+    "Sat" => "day_5",
+    "Sun" => "day_6"
   }
   
   checkbox_id = day_map[day]
@@ -94,7 +95,7 @@ Then("a skill exchange request should exist with teach skill {string}") do |teac
 end
 
 Given("I have an open skill exchange request teaching {string} and learning {string}") do |teach, learn|
-  user = User.first || raise("No users present to attach skill exchange request to")
+  user = User.find_by(email: @current_user_email) || User.first || raise("No users present to attach skill exchange request to")
 
   SkillExchangeRequest.find_or_create_by!(
     user: user,
@@ -150,5 +151,27 @@ When("I view the skill exchange request with teach skill {string}") do |teach_sk
     visit skill_exchange_request_path(request)
   else
     raise "Skill exchange request with teach skill '#{teach_skill}' not found"
+  end
+end
+
+Then("I should see {string} in the page") do |text|
+  expect(page).to have_content(text)
+end
+
+When("I post express interest for the request teaching {string}") do |teach_skill|
+  req = SkillExchangeRequest.find_by!(teach_skill: teach_skill)
+  page.driver.submit :post, "/skill_exchange_requests/#{req.id}/express_interest", {}
+
+  # Follow redirects so flash messages and page content are available
+  if page.driver.respond_to?(:follow_redirect!)
+    page.driver.follow_redirect! while page.driver.response.redirect?
+  end
+end
+
+Then("a user skill request should exist with teach skill {string}") do |teach_skill|
+  req = SkillExchangeRequest.find_by!(teach_skill: teach_skill)
+  requester = User.find_by(email: @current_user_email) || User.first
+  unless UserSkillRequest.exists?(requester: requester, receiver: req.user, skill: teach_skill)
+    raise "Expected a user skill request linked to #{teach_skill}"
   end
 end

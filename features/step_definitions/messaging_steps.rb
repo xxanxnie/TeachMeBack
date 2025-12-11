@@ -91,12 +91,18 @@ Given(/^I am signed in as "([^"]+)" with password "([^"]+)"$/) do |email, passwo
   click_button "Log In"
 end
 
-# NOTE: We do NOT define "I visit the explore page" here to avoid ambiguity.
-# Your existing step in session_steps.rb will handle it.
-
 When(/^I click "([^"]+)" on the request card for "([^"]+)"$/) do |link_text, owner_name|
   card = find(:xpath, "//div[@data-search-item][.//*[contains(normalize-space(.), #{owner_name.inspect})]]")
-  within(card) { click_link link_text }
+  within(card) do
+    begin
+      click_link(link_text, exact: false)
+    rescue Capybara::ElementNotFound
+      # Fallback for links with extra icons/whitespace
+      link = all("a", minimum: 1).find { |a| a.text.include?(link_text) }
+      raise Capybara::ElementNotFound, "Could not find link '#{link_text}' on card for #{owner_name}" unless link
+      link.click
+    end
+  end
 end
 
 When("I click {string} on the match card for {string}") do |button_text, other_name|
@@ -125,4 +131,3 @@ Given(/^a message exists from "([^"]+)" to "([^"]+)" with body "([^"]+)"$/) do |
   to   = find_user_by_name!(to_name)
   Message.create!(sender: from, recipient: to, body: body)
 end
-
