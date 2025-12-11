@@ -6,12 +6,18 @@ RSpec.describe Review, type: :model do
       reviewer = User.create!(email: "a@uni.edu", password: "secretpass", name: "Alice")
       reviewee = User.create!(email: "b@uni.edu", password: "secretpass", name: "Bob")
       request = SkillExchangeRequest.create!(
-  user: reviewee,
-  teach_skill: "Ruby",
-  learn_skill: "Python",
-  expires_after_days: 7,
-  availability_days: ["Monday", "Wednesday"]
-)
+        user: reviewee,
+        teach_skill: "Ruby",
+        teach_level: "beginner",
+        teach_category: "tech_academics",
+        learn_skill: "Python",
+        learn_level: "beginner",
+        learn_category: "language",
+        offer_hours: 2,
+        modality: "remote",
+        expires_after_days: 7,
+        availability_days: ["Monday", "Wednesday"]
+      )
 
       review = Review.new(
         rating: 4,

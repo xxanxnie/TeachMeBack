@@ -1,5 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "reviews/create.html.erb", type: :view do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "renders a simple placeholder" do
+    render
+    expect(rendered).to include("Reviews#create")
+  end
 end

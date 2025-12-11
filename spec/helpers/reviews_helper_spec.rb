@@ -11,5 +11,14 @@ require 'rails_helper'
 #   end
 # end
 RSpec.describe ReviewsHelper, type: :helper do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe "#star_string" do
+    it "renders filled and empty stars for a given rating" do
+      expect(helper.star_string(3)).to eq("★★★☆☆")
+      expect(helper.star_string(5)).to eq("★★★★★")
+    end
+
+    it "handles nil rating as no stars" do
+      expect(helper.star_string(nil)).to eq("☆☆☆☆☆")
+    end
+  end
 end
