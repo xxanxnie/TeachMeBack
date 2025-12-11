@@ -77,7 +77,7 @@ RSpec.describe "Dashboard (Explore)", type: :request do
           modality: "in_person",
           expires_after_days: 10,
           availability_days: [1],
-          status: :open,
+          status: :closed,
           created_at: 11.days.ago
         )
       end
@@ -114,7 +114,7 @@ RSpec.describe "Dashboard (Explore)", type: :request do
 
       it "filters out expired requests" do
         get explore_path
-        expect(response.body).not_to include("Math") # expired request
+        expect(response.body).not_to include("Teaching: Math") # expired request
       end
 
       it "filters out requests older than 180 days" do

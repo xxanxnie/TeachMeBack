@@ -15,6 +15,12 @@ RSpec.describe User, type: :model do
     expect(u.edu_verified).to eq(false)
   end
 
+  it "rejects a blank email" do
+    u = User.new(name: "No Email", email: "", password: "secretpass")
+    expect(u).not_to be_valid
+    expect(u.errors[:email]).to include("can't be blank")
+  end
+
   it "requires a name" do
     u = User.new(email: "k@school.edu", password: "secretpass")
     expect(u).not_to be_valid
@@ -30,7 +36,13 @@ describe "review associations (functional)" do
     request = SkillExchangeRequest.create!(
       user: bob,
       teach_skill: "Ruby",
+      teach_level: "beginner",
+      teach_category: "tech_academics",
       learn_skill: "Python",
+      learn_level: "beginner",
+      learn_category: "language",
+      offer_hours: 2,
+      modality: "remote",
       expires_after_days: 7,
       availability_days: ["Monday"]
     )
@@ -57,7 +69,13 @@ describe "#avg_rating" do
     request = SkillExchangeRequest.create!(
       user: user,
       teach_skill: "Ruby",
+      teach_level: "beginner",
+      teach_category: "tech_academics",
       learn_skill: "Python",
+      learn_level: "beginner",
+      learn_category: "language",
+      offer_hours: 2,
+      modality: "remote",
       expires_after_days: 7,
       availability_days: ["Monday"]
     )
@@ -70,5 +88,3 @@ describe "#avg_rating" do
     expect(user.avg_rating).to eq(4.5)
   end
 end
-
-

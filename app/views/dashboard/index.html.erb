@@ -1,0 +1,6 @@
+<h1>Dashboard</h1>
+<div id="dashboard-requests">
+  <% @skill_requests&.each do |req| %>
+    <div class="request"><%= req.teach_skill %> - <%= req.learn_skill %></div>
+  <% end %>
+</div>

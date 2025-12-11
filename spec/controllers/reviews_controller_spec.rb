@@ -7,7 +7,13 @@ RSpec.describe ReviewsController, type: :controller do
     SkillExchangeRequest.create!(
       user: reviewee,
       teach_skill: "Ruby",
+      teach_level: "beginner",
+      teach_category: "tech_academics",
       learn_skill: "Python",
+      learn_level: "beginner",
+      learn_category: "language",
+      offer_hours: 2,
+      modality: "remote",
       expires_after_days: 7,
       availability_days: ["Monday", "Wednesday"]
     )
@@ -30,10 +36,10 @@ RSpec.describe ReviewsController, type: :controller do
       it "creates a review and updates avg_rating" do
         post :create, params: {
           skill_exchange_request_id: request.id,
+          reviewee_id: reviewee.id,
           review: {
             rating: 5,
-            content: "Excellent!",
-            reviewee_id: reviewee.id
+            content: "Excellent!"
           }
         }
 
@@ -50,10 +56,10 @@ RSpec.describe ReviewsController, type: :controller do
       it "does not save and re-renders the form" do
         post :create, params: {
           skill_exchange_request_id: request.id,
+          reviewee_id: reviewee.id,
           review: {
             rating: nil,
-            content: "",
-            reviewee_id: reviewee.id
+            content: ""
           }
         }
 

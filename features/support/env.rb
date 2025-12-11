@@ -6,6 +6,7 @@
 
 require 'simplecov'
 SimpleCov.command_name 'Cucumber'
+SimpleCov.coverage_dir 'coverage/cucumber'
 SimpleCov.start 'rails' do
   add_filter '/bin/'
   add_filter '/db/'
