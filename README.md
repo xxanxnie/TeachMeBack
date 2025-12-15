@@ -26,13 +26,24 @@ Heroku: https://teachmeback-e9b7cdefef4f.herokuapp.com/
 - Implemented the messaging system so matched users can communicate. Each match spawns a Conversation model, and messages store the sender, content, and timestamp. We use ActionCable/WebSockets for real-time chat, and only the two matched users can access the conversation.
 - With these features, we now have the full core loop: users can discover others, match, and chat after meeting.
 
-## Plan for Next Iteration
-- Expand filtering options and refine search stability and performance.
-- Improve UX of the matching flow, including better notifications and clearer CTAs.
-- Add message read indicators, profile enhancements, and session scheduling tools.
-- Merge review system.
-- Continue **Heroku deployment improvements** and add sample seed data for testing.  
+## Final Iteration Enhancements
+- Enhanced **text-based search** on the Explore page across skills and user names
+- Expanded filtering with category-based constraints using `teach_category` and `learn_category`
+- Updated the **matching algorithm** so users match only when teaching and learning preferences complement each other
+- Added **profile enhancements**, including bio, location, and university fields
+- Implemented the ability to **mark skill exchange requests as complete**
+- Added a **review system** that allows users to leave feedback after completing an exchange
 
+## Testing and Coverage
+We tested application behavior using both RSpec and Cucumber.
+
+- **RSpec Coverage:**  
+  `coverage/rspec/index.html`  
+  Line Coverage: **85.28% (423 / 496)**
+
+- **Cucumber Coverage:**  
+  `coverage/cucumber/index.html`  
+  Line Coverage: **86.29% (428 / 496)**
 
 
 ## Setup
@@ -127,4 +138,10 @@ User Management:
 
 ## Submission Info
 - **Repository:** https://github.com/xxanxnie/TeachMeBack  
-- **Iteration:** 1
+- **Iteration:** Final
+
+
+## Use of AI Tools
+
+In addition to using class material and feedback from our TA, we consulted AI tools for high-level guidance, including understanding Rails conventions, framework best practices, and debugging. We also used AI tools for code suggestions when developing portions of the codebase. All suggestions were reviewed, adapted, and integrated by our team.
+
