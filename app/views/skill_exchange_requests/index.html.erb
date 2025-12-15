@@ -1,8 +1,6 @@
 <div class="container my-4">
   <h2 class="mb-3">Recent Skill Exchange Requests</h2>
 
-  <%= turbo_stream_from "skill_exchange_requests" %>
-
   <div id="ser_list">
     <%= render @requests %>
   </div>

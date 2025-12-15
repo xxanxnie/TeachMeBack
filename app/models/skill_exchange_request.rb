@@ -53,15 +53,15 @@ class SkillExchangeRequest < ApplicationRecord
     end
 
     # ---- Turbo broadcasts for live dashboard ----
-    after_create_commit  -> { broadcast_prepend_to "skill_exchange_requests", target: "ser_list" if status_open? }
-    after_update_commit  do 
-      if status_open? && !expired?
-        broadcast_replace_to "skill_exchange_requests"
-      else
-        broadcast_remove_to "skill_exchange_requests"
-      end
-    end
-    after_destroy_commit -> { broadcast_remove_to "skill_exchange_requests" }
+    # after_create_commit  -> { broadcast_prepend_to "skill_exchange_requests", target: "ser_list" if status_open? }
+   # after_update_commit  do 
+     # if status_open? && !expired?
+       # broadcast_replace_to "skill_exchange_requests"
+     # else
+       # broadcast_remove_to "skill_exchange_requests"
+     # end
+    # end
+   # after_destroy_commit -> { broadcast_remove_to "skill_exchange_requests" }
 
     # scopes for the dashboard
     scope :recent_first, -> { order(created_at: :desc) }
