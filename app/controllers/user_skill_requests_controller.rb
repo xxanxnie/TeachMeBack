@@ -6,7 +6,6 @@ class UserSkillRequestsController < ApplicationController
     @skill_exchange_request = SkillExchangeRequest.find_by(id: params[:skill_exchange_request_id])
     @skill = params[:skill].presence || @skill_exchange_request&.teach_skill || "general"
 
-    # Check if request already exists for this posting/skill
     existing_request = UserSkillRequest.find_by(
       requester_id: current_user.id,
       receiver_id: @receiver.id,
@@ -33,7 +32,6 @@ class UserSkillRequestsController < ApplicationController
       match = Match.find_by(user1_id: user_ids[0], user2_id: user_ids[1])
 
       if match
-        # On mutual match, take the user straight into the messaging thread.
         redirect_to message_thread_path(with: @receiver.id),
                     notice: "Congrats, it's a match! You and #{@receiver.full_name} expressed interest in each other. Start chatting!"
       else
