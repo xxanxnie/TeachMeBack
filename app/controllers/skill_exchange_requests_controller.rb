@@ -92,22 +92,6 @@ class SkillExchangeRequestsController < ApplicationController
       end
     end
   
-    # Allow the owner to update their request, e.g., to mark it as completed/closed
-    def update
-      unless @skill_exchange_request.user == current_user
-        head :forbidden
-        return
-      end
-
-      if @skill_exchange_request.update(skill_exchange_request_update_params)
-        redirect_back(fallback_location: profile_path,
-                      notice: "Skill exchange request updated.")
-      else
-        redirect_back(fallback_location: profile_path,
-                      alert: @skill_exchange_request.errors.full_messages.to_sentence)
-      end
-    end
-  
     def show; end
 
     private
