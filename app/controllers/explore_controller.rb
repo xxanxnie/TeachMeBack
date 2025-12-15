@@ -18,7 +18,6 @@ class ExploreController < ApplicationController
                                   .where("skill_exchange_requests.created_at >= ?", 180.days.ago)
                                   .order(SkillExchangeRequest.arel_table[:created_at].desc)
 
-      # CATEGORY + ROLE logic:
       # - student -> match teach_category
       # - instructor -> match learn_category
       if selected_roles.any?
@@ -42,18 +41,15 @@ class ExploreController < ApplicationController
           items = items.where(combined)
         end
       elsif selected_cats.any?
-        # no role picked: match either side
         items = items.where("teach_category IN (?) OR learn_category IN (?)", selected_cats, selected_cats)
       end
 
-      # DAYS filtering
       if selected_days.any?
         days_order = %w[mon tue wed thu fri sat sun]
         selected_day_keys = selected_days.map(&:to_s).map(&:downcase)
         indices = selected_day_keys.map { |d| days_order.index(d) }.compact
 
         if indices.any?
-          # try common column names in order of preference
           if SkillExchangeRequest.column_names.include?("availability_mask")
             masks = indices.map { |i| 1 << i }
             clause = masks.map { "availability_mask & ? > 0" }.join(" OR ")
@@ -74,7 +70,6 @@ class ExploreController < ApplicationController
 
       if @query.present?
         downcased_query = @query.downcase
-        # Detect intent: "learn guitar" -> match learn_skill, "teach guitar" -> match teach_skill
         intent = nil
         skill_term = downcased_query
         if skill_term.start_with?("learn ")

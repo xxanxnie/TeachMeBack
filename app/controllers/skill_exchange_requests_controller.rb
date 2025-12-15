@@ -12,11 +12,6 @@ class SkillExchangeRequestsController < ApplicationController
       @skill_exchange_request = SkillExchangeRequest.new
     end
   
-    # Express interest in a specific skill exchange request.
-    # This creates a UserSkillRequest between the current user and the
-    # owner of the request (if one does not already exist) and, if there
-    # is a reciprocal request, results in a Match which then links into
-    # the messaging thread.
     def express_interest
       @skill_exchange_request = SkillExchangeRequest.find(params[:id])
       receiver = @skill_exchange_request.user
@@ -44,12 +39,10 @@ class SkillExchangeRequestsController < ApplicationController
       )
 
       if user_skill_request.save
-        # After save, the UserSkillRequest callback may have created a Match.
         user_ids = [current_user.id, receiver.id].sort
         match = Match.find_by(user1_id: user_ids[0], user2_id: user_ids[1])
 
         if match
-          # Directly into the message thread on mutual match
           redirect_to message_thread_path(with: receiver.id),
                       notice: "Congrats, it's a match! You and #{receiver.full_name} expressed interest in each other. Start chatting!"
         else
@@ -62,7 +55,6 @@ class SkillExchangeRequestsController < ApplicationController
       end
     end
 
-    # Allow the owner to update their request, e.g., to mark it as completed/closed
     def update
       unless @skill_exchange_request.user == current_user
         head :forbidden
@@ -95,7 +87,6 @@ class SkillExchangeRequestsController < ApplicationController
     end
 
     def skill_exchange_request_update_params
-      # For now, only allow status changes from the profile/history UI.
       params.require(:skill_exchange_request).permit(:status)
     end
   

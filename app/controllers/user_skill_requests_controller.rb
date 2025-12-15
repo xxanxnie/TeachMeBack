@@ -5,7 +5,6 @@ class UserSkillRequestsController < ApplicationController
     @receiver = User.find(params[:receiver_id])
     @skill = params[:skill] || "general"
     
-    # Check if request already exists
     existing_request = UserSkillRequest.find_by(
       requester_id: current_user.id,
       receiver_id: @receiver.id
@@ -29,7 +28,6 @@ class UserSkillRequestsController < ApplicationController
       match = Match.find_by(user1_id: user_ids[0], user2_id: user_ids[1])
 
       if match
-        # On mutual match, take the user straight into the messaging thread.
         redirect_to message_thread_path(with: @receiver.id),
                     notice: "Congrats, it's a match! You and #{@receiver.full_name} expressed interest in each other. Start chatting!"
       else
