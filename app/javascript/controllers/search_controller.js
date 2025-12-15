@@ -15,7 +15,6 @@ export default class extends Controller {
       if (isVisible) visibleCount++
     })
     
-    // Update count badge
     const countBadge = document.getElementById("request-count")
     if (countBadge) {
       countBadge.textContent = visibleCount

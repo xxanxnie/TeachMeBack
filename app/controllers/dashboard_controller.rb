@@ -5,10 +5,9 @@ class DashboardController < ApplicationController
     @query = params[:q].to_s.strip
     @skill_requests = SkillExchangeRequest.includes(:user)
                                          .where(status: :open)
-                                         .where("created_at > ?", 180.days.ago) # max expiration filter
+                                         .where("created_at > ?", 180.days.ago)
                                          .order(created_at: :desc)
     
-    # Filter out expired requests
     @skill_requests = @skill_requests.reject(&:expired?)
     
     if @query.present?

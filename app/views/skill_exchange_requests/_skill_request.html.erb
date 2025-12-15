@@ -11,7 +11,6 @@
           </div>
         <% end %>
 
-        <!-- user name + "me" badge when this is the current user's request -->
         <div class="flex-grow-1">
           <button
             class="btn btn-link p-0 text-decoration-none fw-semibold text-dark text-start"
@@ -31,7 +30,6 @@
         </div>
       </div>
 
-      <!-- Skills Info -->
       <div class="flex-grow-1 mb-3">
         <div class="mb-2">
           <span class="fw-bold text-primary">🛠️ Teaching:</span><br>
@@ -43,7 +41,6 @@
         </div>
       </div>
 
-      <!-- Availability -->
       <% raw_avail = (skill_request.respond_to?(:availability_days) && skill_request.availability_days.present?) ? Array(skill_request.availability_days) : [] %>
       <% if raw_avail.any? %>
         <% display_days = raw_avail.map do |v|
@@ -67,21 +64,18 @@
         </div>
       <% end %>
 
-      <!-- Learning Goal -->
       <% if skill_request.learning_goal.present? %>
         <div class="small text-muted mb-2" style="max-height: 60px; overflow: hidden;">
           <span class="fw-semibold">🎯 Goal:</span> <%= skill_request.learning_goal.truncate(100) %>
         </div>
       <% end %>
 
-      <!-- Notes -->
       <% if skill_request.notes.present? %>
         <div class="small text-muted mb-2">
           <%= skill_request.notes.truncate(80) %>
         </div>
       <% end %>
 
-      <!-- Badges -->
       <div class="mt-auto pt-2 border-top">
         <div class="d-flex flex-wrap gap-1">
           <span class="badge <%= skill_request.modality == 'remote' ? 'bg-primary' : skill_request.modality == 'hybrid' ? 'bg-warning' : 'bg-success' %>">
@@ -94,7 +88,6 @@
         </div>
       </div>
 
-      <!-- Expiration Info -->
       <div class="mt-2 small text-muted">
         <% expires_in = (skill_request.created_at + skill_request.expires_after_days.days - Time.current).to_i %>
         <% if expires_in > 0 %>
@@ -104,7 +97,6 @@
         <% end %>
       </div>
 
-      <!-- TeachMeBack Request Button -->
       <% if current_user && current_user.id != skill_request.user_id %>
         <% 
           other_user = skill_request.user

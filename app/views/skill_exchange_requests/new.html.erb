@@ -15,7 +15,6 @@
 
     <%= form_with model: @skill_exchange_request, class: "needs-validation" do |f| %>
 
-      <!-- Grouped: Skill you can teach (category + field + level) -->
       <div class="mb-4">
         <h5 class="small fw-semibold mb-2">Skill you can teach</h5>
         <div class="row g-2 align-items-center">
@@ -40,7 +39,6 @@
         </div>
       </div>
 
-      <!-- Grouped: Skill you want to learn (category + field + level) -->
       <div class="mb-4">
         <h5 class="small fw-semibold mb-2">Skill you want to learn</h5>
         <div class="row g-2 align-items-center">
@@ -65,14 +63,12 @@
         </div>
       </div>
 
-      <!-- Learning Goal (optional) -->
       <div class="mb-3">
         <%= f.label :learning_goal, "What’s your learning goal?", class: "form-label fw-semibold" %>
         <%= f.text_area :learning_goal, rows: 3, class: "form-control",
                         placeholder: "e.g., Build a small Python project or learn conversational Spanish." %>
       </div>
 
-      <!-- Hours & Expiration -->
       <div class="row g-3">
         <div class="col-md-6">
           <%= f.label :offer_hours, "Hours you can offer to teach", class: "form-label fw-semibold" %>
@@ -86,14 +82,12 @@
         </div>
       </div>
 
-      <!-- Modality -->
       <div class="mt-3">
         <%= f.label :modality, "How do you want to meet?", class: "form-label fw-semibold" %>
         <%= f.select :modality, [["In person", "in_person"], ["Remote", "remote"], ["Hybrid", "hybrid"]],
                      {}, class: "form-select", required: true %>
       </div>
 
-      <!-- Availability Days -->
       <div class="mt-3">
         <%= f.label :availability_days, "Which days work for you?", class: "form-label fw-semibold" %>
         <div class="d-flex justify-content-center flex-nowrap gap-1">
@@ -116,14 +110,12 @@
         <% end %>
       </div>
 
-      <!-- Notes (optional) -->
       <div class="mt-3">
         <%= f.label :notes, "Notes (optional)", class: "form-label fw-semibold" %>
         <%= f.text_area :notes, rows: 3, class: "form-control",
                         placeholder: "Preferred times, campus location, tools, or teaching style..." %>
       </div>
 
-      <!-- Submit Button -->
       <div class="text-center mt-4">
         <%= f.submit "Post Request", class: "btn btn-primary px-4 py-2" %>
       </div>

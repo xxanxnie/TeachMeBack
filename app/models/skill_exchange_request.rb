@@ -1,4 +1,3 @@
-# app/models/skill_exchange_request.rb
 class SkillExchangeRequest < ApplicationRecord
     belongs_to :user
     has_many :reviews, dependent: :destroy
@@ -11,7 +10,6 @@ class SkillExchangeRequest < ApplicationRecord
     enum :teach_level, { beginner: 1, intermediate: 2, advanced: 3 }, prefix: true
     enum :learn_level, { beginner: 1, intermediate: 2, advanced: 3 }, prefix: true
   
-    # ---------- REQUIREMENTS (everything required except notes & learning_goal) ----------
     validates :teach_skill, :learn_skill,
               :teach_level, :learn_level,
               :offer_hours, :modality,
@@ -20,7 +18,6 @@ class SkillExchangeRequest < ApplicationRecord
   
     validate  :availability_days_must_be_selected
   
-    # ---------- Constraints ----------
     validates :offer_hours,
               numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 40 }
   
@@ -29,16 +26,13 @@ class SkillExchangeRequest < ApplicationRecord
   
     validates :modality, inclusion: { in: %w[in_person remote hybrid] }
   
-    # Optional
     validates :learning_goal, length: { maximum: 500 }, allow_blank: true
   
-    # ---------- Normalization----------
     before_validation do
       self.teach_skill = teach_skill.to_s.strip
       self.learn_skill = learn_skill.to_s.strip
     end
   
-    # ---------- Availability helpers ----------
     def availability_days
       DAYS.each_index.select { |i| (availability_mask.to_i & (1 << i)) != 0 }
     end
@@ -52,20 +46,8 @@ class SkillExchangeRequest < ApplicationRecord
       created_at.present? && created_at < expires_after_days.days.ago
     end
 
-    # ---- Turbo broadcasts for live dashboard ----
-    # after_create_commit  -> { broadcast_prepend_to "skill_exchange_requests", target: "ser_list" if status_open? }
-   # after_update_commit  do 
-     # if status_open? && !expired?
-       # broadcast_replace_to "skill_exchange_requests"
-     # else
-       # broadcast_remove_to "skill_exchange_requests"
-     # end
-    # end
-   # after_destroy_commit -> { broadcast_remove_to "skill_exchange_requests" }
-
-    # scopes for the dashboard
     scope :recent_first, -> { order(created_at: :desc) }
-    scope :status_open_only, -> { where(status: statuses[:open]) } # enum scope helper
+    scope :status_open_only, -> { where(status: statuses[:open]) }
   
     private
   
@@ -75,7 +57,6 @@ class SkillExchangeRequest < ApplicationRecord
       end
     end
 
-    # categories keys => display label
     CATEGORIES = {
       "music_art"      => "Music/Art",
       "tech_academics" => "Tech/Academics",
@@ -88,7 +69,6 @@ class SkillExchangeRequest < ApplicationRecord
               presence: true,
               inclusion: { in: CATEGORIES.keys }
 
-    # normalize strings
     before_validation do
       self.teach_skill     = teach_skill.to_s.strip
       self.learn_skill     = learn_skill.to_s.strip
@@ -104,7 +84,6 @@ class SkillExchangeRequest < ApplicationRecord
       CATEGORIES[learn_category] || learn_category&.humanize
     end
 
-    # normalize availability days to mask
     before_validation :normalize_availability_days_to_mask
 
     private
