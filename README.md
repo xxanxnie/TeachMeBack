@@ -1,4 +1,4 @@
-# TeachMeBack 🎓
+# TeachMeBack
 
 TeachMeBack is a simple Ruby on Rails SaaS app that lets students exchange skills — like *“I’ll teach you guitar if you help me with Python.”*
 ---
@@ -26,13 +26,11 @@ Heroku: https://teachmeback-e9b7cdefef4f.herokuapp.com/
 - Implemented the messaging system so matched users can communicate. Each match spawns a Conversation model, and messages store the sender, content, and timestamp. We use ActionCable/WebSockets for real-time chat, and only the two matched users can access the conversation.
 - With these features, we now have the full core loop: users can discover others, match, and chat after meeting.
 
-## Plan for Next Iteration
-- Expand filtering options and refine search stability and performance.
-- Improve UX of the matching flow, including better notifications and clearer CTAs.
-- Add message read indicators, profile enhancements, and session scheduling tools.
-- Merge review system.
-- Continue **Heroku deployment improvements** and add sample seed data for testing.  
-
+## What We Accomplished (Final Iteration)
+- Enhanced the search functionality on the explore page with comprehensive text search that queries across skills and user names.
+- Expanded filtering capabilities by adding category-based filtering (`teach_category` and `learn_category`) to skill exchange requests.
+- Updated matching algorithm - two users get matched only when what they're teaching and what they want to learn complement each other.
+- Added profile enhancements allowing users to customize their profiles with additional fields including bio, location, and university. 
 
 
 ## Setup
@@ -128,3 +126,6 @@ User Management:
 ## Submission Info
 - **Repository:** https://github.com/xxanxnie/TeachMeBack  
 - **Iteration:** 1
+
+## Sources
+- In addition to using class material and feedback from our TA, we consulted AI for high level guidance, including understanding Rails conventions and framework best practices, and debugging. We also used AI for code suggestions when developing portions of the codebase. All suggestions were reviewed, adapted and integrated by our team.

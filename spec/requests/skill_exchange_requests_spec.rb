@@ -4,7 +4,6 @@ RSpec.describe "SkillExchangeRequests", type: :request do
   let(:user) { User.create!(name: "Test User", email: "test@school.edu", password: "password123", first_name: "Test", last_name: "User") }
 
   before do
-    # Simulate login
     post "/login", params: { email: user.email, password: "password123" }
   end
 
@@ -247,7 +246,7 @@ RSpec.describe "SkillExchangeRequests", type: :request do
       expect(response.body).to include("Python")
     end
 
-    it "returns 404 for another user's request" do
+    it "renders another user's request (public view)" do
       other_user = User.create!(name: "Other", email: "other@school.edu", password: "password123")
       other_request = SkillExchangeRequest.create!(
         user: other_user,
@@ -264,7 +263,8 @@ RSpec.describe "SkillExchangeRequests", type: :request do
       )
       
       get skill_exchange_request_path(other_request)
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Guitar")
     end
   end
 

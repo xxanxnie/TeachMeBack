@@ -15,12 +15,17 @@ class User < ApplicationRecord
            foreign_key: :recipient_id,
            dependent: :destroy
 
+  has_many :received_reviews, class_name: "Review", foreign_key: "reviewee_id", dependent: :destroy
+  has_many :given_reviews, class_name: "Review", foreign_key: "reviewer_id", dependent: :destroy
+
   has_secure_password
 
   validates :name, presence: true
-  validates :email, presence: true
+  validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :password, length: { minimum: 8 }, allow_nil: true
   validate  :edu_email_only
 
+  before_validation :normalize_email
   before_validation :set_edu_verified
   before_validation :set_display_name
 
@@ -38,8 +43,12 @@ class User < ApplicationRecord
     Match.exists?(user1_id: user_ids[0], user2_id: user_ids[1])
   end
 
-  def has_sent_request_to?(other_user)
-    sent_skill_requests.exists?(receiver_id: other_user.id)
+  def has_sent_request_for?(other_user, skill_or_request)
+    if skill_or_request.respond_to?(:id) && skill_or_request.respond_to?(:teach_skill)
+      sent_skill_requests.exists?(receiver_id: other_user.id, skill_exchange_request_id: skill_or_request.id)
+    else
+      sent_skill_requests.exists?(receiver_id: other_user.id, skill: skill_or_request.to_s)
+    end
   end
 
   def has_received_request_from?(other_user)
@@ -62,6 +71,10 @@ class User < ApplicationRecord
   end
 
   private
+
+  def normalize_email
+    self.email = email.to_s.strip.downcase
+  end
 
   def set_display_name
     if name.to_s.strip.blank?

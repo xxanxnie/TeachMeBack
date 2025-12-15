@@ -74,31 +74,71 @@ class ExploreController < ApplicationController
 
       if @query.present?
         downcased_query = @query.downcase
+        # Detect intent: "learn guitar" -> match learn_skill, "teach guitar" -> match teach_skill
+        intent = nil
+        skill_term = downcased_query
+        if skill_term.start_with?("learn ")
+          intent = :learn
+          skill_term = skill_term.sub(/\Alearn\s+/, "")
+        elsif skill_term.start_with?("learning ")
+          intent = :learn
+          skill_term = skill_term.sub(/\Alearning\s+/, "")
+        elsif skill_term.start_with?("teach ")
+          intent = :teach
+          skill_term = skill_term.sub(/\Ateach\s+/, "")
+        elsif skill_term.start_with?("teaching ")
+          intent = :teach
+          skill_term = skill_term.sub(/\Ateaching\s+/, "")
+        end
+
+        skill_term = downcased_query if skill_term.blank?
+
         if items.respond_to?(:left_outer_joins)
-          sanitized = ActiveRecord::Base.sanitize_sql_like(downcased_query)
-          like = "%#{sanitized}%"
-          search_sql = <<~SQL.squish
-            LOWER(skill_exchange_requests.teach_skill) LIKE :q OR
-            LOWER(skill_exchange_requests.learn_skill) LIKE :q OR
-            LOWER(skill_exchange_requests.modality) LIKE :q OR
-            LOWER(COALESCE(users.name, '')) LIKE :q OR
-            LOWER(COALESCE(users.first_name, '')) LIKE :q OR
-            LOWER(COALESCE(users.last_name, '')) LIKE :q OR
-            LOWER(TRIM(COALESCE(users.first_name, '') || ' ' || COALESCE(users.last_name, ''))) LIKE :q
-          SQL
-          items = items.left_outer_joins(:user).where(search_sql, q: like)
+          items = items.left_outer_joins(:user)
+          if intent == :learn
+            sanitized = ActiveRecord::Base.sanitize_sql_like(skill_term)
+            like = "%#{sanitized}%"
+            items = items.where("LOWER(skill_exchange_requests.learn_skill) LIKE ?", like)
+          elsif intent == :teach
+            sanitized = ActiveRecord::Base.sanitize_sql_like(skill_term)
+            like = "%#{sanitized}%"
+            items = items.where("LOWER(skill_exchange_requests.teach_skill) LIKE ?", like)
+          else
+            sanitized = ActiveRecord::Base.sanitize_sql_like(downcased_query)
+            like = "%#{sanitized}%"
+            search_sql = <<~SQL.squish
+              LOWER(skill_exchange_requests.teach_skill) LIKE :q OR
+              LOWER(skill_exchange_requests.learn_skill) LIKE :q OR
+              LOWER(skill_exchange_requests.modality) LIKE :q OR
+              LOWER(COALESCE(users.name, '')) LIKE :q OR
+              LOWER(COALESCE(users.first_name, '')) LIKE :q OR
+              LOWER(COALESCE(users.last_name, '')) LIKE :q OR
+              LOWER(TRIM(COALESCE(users.first_name, '') || ' ' || COALESCE(users.last_name, ''))) LIKE :q
+            SQL
+            items = items.where(search_sql, q: like)
+          end
         else
           items = Array(items).select do |record|
-            values = [
-              record.teach_skill,
-              record.learn_skill,
+            base_values = [
               record.modality,
               record.user&.name,
               record.user&.first_name,
               record.user&.last_name,
               [record.user&.first_name, record.user&.last_name].compact.join(" ")
             ].compact
-            values.any? { |val| val.to_s.downcase.include?(downcased_query) }
+            values = [
+              record.teach_skill,
+              record.learn_skill
+            ].compact
+            if intent == :learn
+              values = [record.learn_skill].compact
+              values.any? { |val| val.to_s.downcase.include?(skill_term) }
+            elsif intent == :teach
+              values = [record.teach_skill].compact
+              values.any? { |val| val.to_s.downcase.include?(skill_term) }
+            else
+              (values + base_values).any? { |val| val.to_s.downcase.include?(downcased_query) }
+            end
           end
         end
       end

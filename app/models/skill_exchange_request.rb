@@ -1,6 +1,7 @@
 # app/models/skill_exchange_request.rb
 class SkillExchangeRequest < ApplicationRecord
     belongs_to :user
+    has_many :reviews, dependent: :destroy
 
     DAYS = %w[Mon Tue Wed Thu Fri Sat Sun].freeze
 
@@ -52,15 +53,15 @@ class SkillExchangeRequest < ApplicationRecord
     end
 
     # ---- Turbo broadcasts for live dashboard ----
-    after_create_commit  -> { broadcast_prepend_to "skill_exchange_requests", target: "ser_list" if status_open? }
-    after_update_commit  do 
-      if status_open? && !expired?
-        broadcast_replace_to "skill_exchange_requests"
-      else
-        broadcast_remove_to "skill_exchange_requests"
-      end
-    end
-    after_destroy_commit -> { broadcast_remove_to "skill_exchange_requests" }
+    # after_create_commit  -> { broadcast_prepend_to "skill_exchange_requests", target: "ser_list" if status_open? }
+   # after_update_commit  do 
+     # if status_open? && !expired?
+       # broadcast_replace_to "skill_exchange_requests"
+     # else
+       # broadcast_remove_to "skill_exchange_requests"
+     # end
+    # end
+   # after_destroy_commit -> { broadcast_remove_to "skill_exchange_requests" }
 
     # scopes for the dashboard
     scope :recent_first, -> { order(created_at: :desc) }
@@ -107,6 +108,8 @@ class SkillExchangeRequest < ApplicationRecord
     before_validation :normalize_availability_days_to_mask
 
     private
+
+    public :teach_category_label, :learn_category_label
 
     def normalize_availability_days_to_mask
       values = Array(availability_days)

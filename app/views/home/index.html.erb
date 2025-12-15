@@ -12,7 +12,11 @@
     <div class="col-lg-6">
       <div class="card shadow-sm p-4">
         <h2 class="h4 mb-3">Log in</h2>
+        <% if flash[:alert].present? %>
+          <div class="alert alert-danger"><%= flash[:alert] %></div>
+        <% end %>
         <%= form_with url: login_path, local: true do |form| %>
+          <%= hidden_field_tag :auth_source, "home" %>
           <div class="mb-3">
             <%= form.label :email, class: "form-label" %>
             <%= form.email_field :email, class: "form-control", placeholder: "you@school.edu" %>
@@ -30,4 +34,91 @@
       </div>
     </div>
   </div>
-</div>
+
+  <div class="mt-5">
+    <div class="text-center mb-3">
+      <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">See how it feels</span>
+      <h3 class="h4 fw-bold mt-2 mb-2">Real campus energy, real students</h3>
+      <p class="text-muted mb-0">Mutual learning meetups, collaboration sprints, and quick lessons — captured on campus.</p>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm overflow-hidden">
+          <%= image_tag "badminton.jpg",
+                        alt: "Students playing badminton together",
+                        class: "w-100",
+                        style: "height: 220px; object-fit: cover;" %>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm overflow-hidden">
+          <%= image_tag "learn.jpg",
+                        alt: "Students learning together",
+                        class: "w-100",
+                        style: "height: 220px; object-fit: cover;" %>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm overflow-hidden">
+          <%= image_tag "guitar.jpg",
+                        alt: "Student teaching guitar",
+                        class: "w-100",
+                        style: "height: 220px; object-fit: cover;" %>
+        </div>
+      </div>
+      
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-0 gy-2" style="margin-top: -28px;">
+    <div class="col-12">
+      <div class="text-center mb-3">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">Built for campus communities</span>
+        <h2 class="h3 fw-bold mt-3 mb-2">Swap skills with classmates, not strangers</h2>
+        <p class="text-muted mb-0">Post what you want to learn, share what you can teach, and match with people nearby.</p>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold text-primary mb-2">Learn anything</div>
+          <p class="mb-2">Want to learn Python, Figma, guitar, or interview prep? Post a request and get matched fast.</p>
+          <span class="badge bg-light text-primary border">Want to learn: ___</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold text-primary mb-2">Teach what you know</div>
+          <p class="mb-2">Share your strengths—host a quick session, swap notes, or run a mini-workshop.</p>
+          <span class="badge bg-light text-primary border">Can teach: ___</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold text-primary mb-2">On-campus only</div>
+          <p class="mb-2">.edu email required. Keep exchanges trusted, local, and relevant to your campus.</p>
+          <span class="badge bg-light text-primary border">Verified .edu</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold text-primary mb-2">Explore & match</div>
+          <p class="mb-2">Browse live skill posts and match with students looking for the exact skills you offer.</p>
+          <span class="badge bg-light text-primary border">Explore skills</span>
+        </div>
+      </div>
+    </div>
+  </div>

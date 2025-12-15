@@ -162,7 +162,7 @@ RSpec.describe "User Profile", type: :request do
 
       it "has link to create new request" do
         get profile_path
-        expect(response.body).to include("Post a new skill exchange request")
+        expect(response.body).to include("Post a new request")
       end
     end
 

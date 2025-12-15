@@ -1,10 +1,9 @@
 <div class="container py-4">
   <div class="row g-4">
-    <!-- Left: Profile summary card -->
+    <!-- Left: Profile summary + About + Location/University -->
     <div class="col-lg-4">
-      <div class="card shadow-sm p-4">
+      <div class="card shadow-sm p-4 h-100">
         <div class="d-flex align-items-center gap-3">
-          <!-- Profile picture placeholder (initials circle) -->
           <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
                style="width: 72px; height: 72px; font-weight: 700; font-size: 1.25rem;">
             <%= (@user.full_name.to_s.split.map { |n| n[0] }.join.first(2).presence || "TM") %>
@@ -34,14 +33,12 @@
             </div>
             <div class="text-muted small">Email (read‑only)</div>
             <div class="fw-medium"><%= @user.email %></div>
+            <div class="text-muted small mt-1">Rating: <%= @user.avg_rating&.round(2) || "Not yet rated" %></div>
           </div>
         </div>
-      </div>
 
-      
+        <hr class="my-4">
 
-      <!-- About Me with inline edit (moved to left column) -->
-      <div class="card shadow-sm p-4 mt-3">
         <div class="d-flex justify-content-between align-items-center">
           <h3 class="h5 mb-0">About Me</h3>
           <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#bioEdit" aria-expanded="false" aria-controls="bioEdit">Edit</button>
@@ -57,10 +54,9 @@
             </div>
           <% end %>
         </div>
-      </div>
 
-      <!-- Location / University with inline edit (moved to left column) -->
-      <div class="card shadow-sm p-4 mt-3">
+        <hr class="my-4">
+
         <div class="d-flex justify-content-between align-items-center">
           <h3 class="h5 mb-0">Location / University</h3>
           <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#locEdit" aria-expanded="false" aria-controls="locEdit">Edit</button>
@@ -96,84 +92,113 @@
       </div>
     </div>
 
-    <!-- Right: Profile details and Exchange activity -->
+    <!-- Right: Skills first, then activity and reviews -->
     <div class="col-lg-8">
-      
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="card shadow-sm p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="h5 mb-0">Skills I Can Teach</h3>
+              <%= link_to "Post a new request", new_skill_exchange_request_path, class: "btn btn-outline-primary btn-sm" %>
+            </div>
+            <div class="mt-3">
+              <% skills = @user.skill_exchange_requests.pluck(:teach_skill).select(&:present?).uniq %>
+              <% if skills.any? %>
+                <div class="d-flex flex-wrap gap-2">
+                  <% skills.each do |skill| %>
+                    <span class="badge rounded-pill text-bg-primary" style="background: linear-gradient(90deg, #002F6C, #0056A3);"> <%= skill %> </span>
+                  <% end %>
+                </div>
+              <% else %>
+                <p class="text-muted mb-0">No skills listed yet. Post a request to add what you can teach.</p>
+              <% end %>
+            </div>
+          </div>
+        </div>
 
-      <!-- Skills I Can Teach -->
-      <div class="card shadow-sm p-4">
-        <h3 class="h5 mb-3">Skills I Can Teach</h3>
-        <% skills = @user.skill_exchange_requests.pluck(:teach_skill).select(&:present?).uniq %>
-        <% if skills.any? %>
-          <div class="d-flex flex-wrap gap-2">
-            <% skills.each do |skill| %>
-              <span class="badge rounded-pill text-bg-primary" style="background: linear-gradient(90deg, #002F6C, #0056A3);"> <%= skill %> </span>
+        <div class="col-12">
+          <div class="card shadow-sm p-4 h-100">
+            <h3 class="h5">Exchange Activity</h3>
+            <hr>
+            <% active = @user.skill_exchange_requests.where(status: [SkillExchangeRequest.statuses[:open], SkillExchangeRequest.statuses[:matched]]).order(created_at: :desc) %>
+            <h4 class="h6 text-uppercase text-muted mt-2">Active Skill Exchange Requests</h4>
+            <% if active.any? %>
+              <ul class="list-group list-group-flush">
+                <% active.each do |req| %>
+                  <li class="list-group-item px-0">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                      <div>
+                        <strong><%= req.teach_skill %></strong> → <strong><%= req.learn_skill %></strong>
+                        <span class="badge bg-secondary ms-2"><%= req.status.humanize %></span>
+                        <%= link_to "View details", skill_exchange_request_path(req), class: "btn btn-link btn-sm ps-1" %>
+                      </div>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="text-muted small"><%= req.created_at.strftime('%b %d, %Y') %></div>
+                        <% if req.status_open? %>
+                          <%= button_to "Mark as completed",
+                                        skill_exchange_request_path(req),
+                                        method: :patch,
+                                        params: { skill_exchange_request: { status: :closed } },
+                                        class: "btn btn-outline-success btn-sm" %>
+                        <% end %>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="text-muted mb-0">No active requests yet.</p>
+            <% end %>
+
+            <% completed = @user.skill_exchange_requests.where(status: SkillExchangeRequest.statuses[:closed]).order(updated_at: :desc) %>
+            <h4 class="h6 text-uppercase text-muted mt-4">History / Past Exchanges</h4>
+            <% if completed.any? %>
+              <ul class="list-group list-group-flush">
+                <% completed.each do |req| %>
+                  <% review = req.reviews.find_by(reviewer_id: @user.id) rescue nil %>
+                  <li class="list-group-item px-0">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                      <div>
+                        <strong><%= req.teach_skill %></strong> ↔ <strong><%= req.learn_skill %></strong>
+                        <% if review&.reviewee %>
+                          <span class="text-muted">with <%= review.reviewee.full_name %></span>
+                        <% else %>
+                          <span class="text-muted">with partner</span>
+                        <% end %>
+                        <%= link_to "View details", skill_exchange_request_path(req), class: "btn btn-link btn-sm ps-1" %>
+                      </div>
+                      <div class="text-muted small"><%= req.updated_at.strftime('%b %d, %Y') %></div>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="text-muted mb-0">No past exchanges yet.</p>
             <% end %>
           </div>
-        <% else %>
-          <p class="text-muted mb-0">No skills listed yet. Post a request to add what you can teach.</p>
-        <% end %>
-
-        <div class="mt-3">
-          <%= link_to "Post a new skill exchange request", new_skill_exchange_request_path, class: "btn btn-outline-primary" %>
         </div>
-      </div>
 
-      <!-- Exchange Activity -->
-      <div class="card shadow-sm p-4 mt-3">
-        <h3 class="h5">Exchange Activity</h3>
-        <hr>
-        <% active = @user.skill_exchange_requests.where(status: [SkillExchangeRequest.statuses[:open], SkillExchangeRequest.statuses[:matched]]).order(created_at: :desc) %>
-        <h4 class="h6 text-uppercase text-muted mt-2">Active Skill Exchange Requests</h4>
-        <% if active.any? %>
-          <ul class="list-group list-group-flush">
-            <% active.each do |req| %>
-              <li class="list-group-item px-0">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                  <div>
-                    <strong><%= req.teach_skill %></strong> → <strong><%= req.learn_skill %></strong>
-                    <span class="badge bg-secondary ms-2"><%= req.status.humanize %></span>
-                    <%= link_to "View details", skill_exchange_request_path(req), class: "btn btn-link btn-sm ps-1" %>
+        <div class="col-12">
+          <div class="card shadow-sm p-4 h-100">
+            <h3 class="h5">What Others Say About Me</h3>
+            <hr>
+            <% if @user.received_reviews.any? %>
+              <% @user.received_reviews.each do |review| %>
+                <div class="mb-3">
+                  <% filled = "★" * review.rating.to_i %>
+                  <% empty  = "☆" * (5 - review.rating.to_i) %>
+                  <div class="fw-semibold d-flex align-items-center gap-2">
+                    <span class="text-warning"><%= filled %><%= empty %></span>
+                    <span><%= review.rating %>/5 from <%= review.reviewer.full_name %></span>
                   </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="text-muted small"><%= req.created_at.strftime('%b %d, %Y') %></div>
-                    <!-- Mark as completed moves the request into history -->
-                    <% if req.status_open? %>
-                      <%= button_to "Mark as completed",
-                                    skill_exchange_request_path(req),
-                                    method: :patch,
-                                    params: { skill_exchange_request: { status: :closed } },
-                                    class: "btn btn-outline-success btn-sm" %>
-                    <% end %>
-                  </div>
+                  <div class="text-muted"><%= review.content %></div>
                 </div>
-              </li>
+              <% end %>
+            <% else %>
+              <p class="text-muted mb-0">No reviews yet. Once you complete a match, others can leave feedback here.</p>
             <% end %>
-          </ul>
-        <% else %>
-          <p class="text-muted mb-0">No active requests yet.</p>
-        <% end %>
-
-        <% completed = @user.skill_exchange_requests.where(status: SkillExchangeRequest.statuses[:closed]).order(updated_at: :desc) %>
-        <h4 class="h6 text-uppercase text-muted mt-4">History / Past Exchanges</h4>
-        <% if completed.any? %>
-          <ul class="list-group list-group-flush">
-            <% completed.each do |req| %>
-              <li class="list-group-item px-0">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                  <div>
-                    <strong><%= req.teach_skill %></strong> ↔ <strong><%= req.learn_skill %></strong>
-                    <span class="text-muted">with partner</span>
-                    <%= link_to "View details", skill_exchange_request_path(req), class: "btn btn-link btn-sm ps-1" %>
-                  </div>
-                  <div class="text-muted small"><%= req.updated_at.strftime('%b %d, %Y') %></div>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        <% else %>
-          <p class="text-muted mb-0">No past exchanges yet.</p>
-        <% end %>
+          </div>
+        </div>
       </div>
     </div>
   </div>

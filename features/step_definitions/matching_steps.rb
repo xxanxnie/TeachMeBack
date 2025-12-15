@@ -45,11 +45,13 @@ end
 Given("a user skill request exists from {string} to {string} for skill {string}") do |requester_name, receiver_name, skill|
   requester = find_user_by_name!(requester_name)
   receiver  = find_user_by_name!(receiver_name)
+  ser = receiver.skill_exchange_requests.find_by(teach_skill: skill) || receiver.skill_exchange_requests.first
 
   UserSkillRequest.find_or_create_by!(
     requester: requester,
     receiver: receiver,
-    skill: skill
+    skill: skill,
+    skill_exchange_request: ser
   )
 end
 

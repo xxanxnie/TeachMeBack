@@ -20,3 +20,15 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
 end
+
+begin
+  ActiveRecord::Base.connection.execute("PRAGMA busy_timeout = 2000")
+rescue StandardError
+end
+# Enable shoulda-matchers for model association and validation tests
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end

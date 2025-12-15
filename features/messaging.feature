@@ -15,17 +15,16 @@ Feature: Messaging between users
     Then I should be on the message thread with "John Student"
     When I fill in "Message" with "Hey John, I can meet this week."
     And I press "Send"
-    Then I should see "Sent."
+    Then I should be on the message thread with "John Student"
     And I should see "Hey John, I can meet this week."
 
   Scenario: Validation error on empty message
     When I visit the explore page
     And I click "Send message" on the request card for "John Student"
     And I press "Send"
-    Then I should see "blank"
+    Then I should see "Body can't be blank"
 
   Scenario: See previous messages in the thread
     Given a message exists from "John Student" to "Kiel" with body "Yo, are you free Thursday?"
     When I go to the message thread with "John Student"
     Then I should see "Yo, are you free Thursday?"
-

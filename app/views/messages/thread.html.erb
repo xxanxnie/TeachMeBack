@@ -7,7 +7,7 @@
   </div>
 
   <div class="card shadow-sm mb-3">
-    <div class="card-body" style="max-height: 50vh; overflow-y: auto;">
+    <div class="card-body" data-messages-container style="max-height: 50vh; overflow-y: auto;">
       <% @messages.each do |m| %>
         <div class="mb-3">
           <div class="<%= m.sender_id == current_user.id ? 'text-end' : 'text-start' %>">
@@ -25,13 +25,18 @@
 
   <div class="card shadow-sm">
     <div class="card-body">
-      <%= form_with model: @message, url: messages_path do |f| %>
+      <%= form_with model: @message,
+                    url: messages_path,
+                    local: true do |f| %>
         <%= f.hidden_field :recipient_id %>
 
         <!-- Add this label so the Cucumber step can find "Message" -->
         <div class="mb-2">
           <%= f.label :body, "Message", class: "form-label" %>
-          <%= f.text_area :body, class: "form-control", rows: 3, placeholder: "Write a reply..." %>
+          <%= f.text_area :body,
+                          class: "form-control",
+                          rows: 3,
+                          placeholder: "Write a reply... (Press Enter to send, Shift+Enter for newline)" %>
         </div>
 
         <div class="text-end">
@@ -42,3 +47,26 @@
   </div>
 </div>
 
+<script>
+  const setupMessagePage = () => {
+    const container = document.querySelector("[data-messages-container]");
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+
+    const textarea = document.getElementById("message_body");
+    if (textarea && !textarea.dataset.enterBound) {
+      textarea.dataset.enterBound = "true";
+      textarea.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          const form = textarea.closest("form");
+          if (form) form.submit();
+        }
+      });
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", setupMessagePage);
+  document.addEventListener("turbo:load", setupMessagePage);
+</script>

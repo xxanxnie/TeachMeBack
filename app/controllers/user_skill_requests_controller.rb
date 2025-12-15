@@ -3,24 +3,26 @@ class UserSkillRequestsController < ApplicationController
 
   def create
     @receiver = User.find(params[:receiver_id])
-    @skill = params[:skill] || "general"
     @skill_exchange_request = SkillExchangeRequest.find_by(id: params[:skill_exchange_request_id])
-    
-    # Check if request already exists
+    @skill = params[:skill].presence || @skill_exchange_request&.teach_skill || "general"
+
     existing_request = UserSkillRequest.find_by(
       requester_id: current_user.id,
-      receiver_id: @receiver.id
+      receiver_id: @receiver.id,
+      skill_exchange_request_id: @skill_exchange_request&.id,
+      skill: @skill
     )
 
     if existing_request
-      redirect_back(fallback_location: explore_path, alert: "You have already sent a request to this user.")
+      redirect_back(fallback_location: explore_path, alert: "You have already sent a request for this posting.")
       return
     end
 
     @user_skill_request = UserSkillRequest.new(
       requester: current_user,
       receiver: @receiver,
-      skill: @skill
+      skill: @skill,
+      skill_exchange_request: @skill_exchange_request
     )
 
     if @user_skill_request.save
@@ -30,13 +32,6 @@ class UserSkillRequestsController < ApplicationController
       match = Match.find_by(user1_id: user_ids[0], user2_id: user_ids[1])
 
       if match
-        # If this TeachMeBack came from a specific skill exchange post,
-        # mark just that request as matched so other posts remain open.
-        if @skill_exchange_request && @skill_exchange_request.status_open?
-          @skill_exchange_request.update(status: :matched)
-        end
-
-        # On mutual match, take the user straight into the messaging thread.
         redirect_to message_thread_path(with: @receiver.id),
                     notice: "Congrats, it's a match! You and #{@receiver.full_name} expressed interest in each other. Start chatting!"
       else
@@ -56,4 +51,3 @@ class UserSkillRequestsController < ApplicationController
     end
   end
 end
-

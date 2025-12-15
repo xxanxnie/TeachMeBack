@@ -66,8 +66,7 @@ RSpec.describe "User Signup", type: :request do
 
       it "shows success message" do
         post users_path, params: valid_params
-        follow_redirect!
-        expect(response.body).to include("Account created successfully")
+        expect(flash[:notice]).to include("Account created successfully")
       end
     end
 
@@ -93,6 +92,15 @@ RSpec.describe "User Signup", type: :request do
         expect(response.body).to include(".edu email required")
       end
 
+      it "shows error for malformed email" do
+        invalid_params = valid_params.deep_dup
+        invalid_params[:user][:email] = "not-an-email"
+
+        post users_path, params: invalid_params
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include(".edu email required")
+      end
+
       it "does not create user without password" do
         invalid_params = valid_params.deep_dup
         invalid_params[:user][:password] = ""
@@ -113,4 +121,3 @@ RSpec.describe "User Signup", type: :request do
     end
   end
 end
-

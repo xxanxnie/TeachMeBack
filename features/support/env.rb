@@ -4,6 +4,16 @@
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
 
+require 'simplecov'
+SimpleCov.command_name 'Cucumber'
+SimpleCov.coverage_dir 'coverage/cucumber'
+SimpleCov.start 'rails' do
+  add_filter '/bin/'
+  add_filter '/db/'
+  add_filter '/config/'
+  add_filter '/features/'
+end
+
 
 require 'cucumber/rails'
 
